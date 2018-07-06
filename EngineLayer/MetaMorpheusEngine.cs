@@ -1,6 +1,7 @@
 ﻿using Chemistry;
 using MassSpectrometry;
 using MzLibUtil;
+using Proteomics.ProteolyticDigestion;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -510,6 +511,8 @@ namespace EngineLayer
 
             return dissociationTypes;
         }
+
+        protected List<Peptide> 
 
         protected void Warn(string v)
         {
