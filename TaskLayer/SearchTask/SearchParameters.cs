@@ -31,7 +31,6 @@ namespace TaskLayer
         public double MaximumMassThatFragmentIonScoreIsDoubled { get; set; }
         public bool OutMzId { get; set; } = true;
         public bool OutPepXML { get; set; }
-
         public Dictionary<string, int> ModsToWriteSelection { get; set; } = new Dictionary<string, int>
             {
                 //Key is modification type.

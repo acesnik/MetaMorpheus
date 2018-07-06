@@ -517,7 +517,8 @@ namespace MetaMorpheusGUI
                 }
                 else if (RadioButtonShuffleDecoy.IsChecked.Value)
                 {
-                    TheTask.SearchParameters.DecoyType = DecoyType.Reverse;
+                    TheTask.SearchParameters.DecoyType = DecoyType.None;
+                    TheTask.SearchParameters.GenerateShuffledDecoysOnTheFly = true;
                 }
                 else
                 {
