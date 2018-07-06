@@ -48,7 +48,7 @@ namespace EngineLayer.Localization
                     List<double> matchedIonIntensityList = new List<double>();
 
                     //populate the above lists
-                    MatchIonsOld(theScan, CommonParameters.ProductMassTolerance, sortedTheoreticalProductMasses, matchedIonSeriesList, matchedIonMassToChargeRatioList, productMassErrorDaList, productMassErrorPpmList, matchedIonIntensityList, thePrecursorMass, productType, CommonParameters.AddCompIons);
+                    MatchIonsOld(theScan, CommonParameters.ProductMassTolerance, sortedTheoreticalProductMasses, matchedIonSeriesList, matchedIonMassToChargeRatioList, productMassErrorDaList, productMassErrorPpmList, matchedIonIntensityList, thePrecursorMass, productType, CommonParameters.AddComplementaryIons);
 
                     psm.MatchedIonSeriesDict.Add(productType, matchedIonSeriesList.ToArray());
                     psm.MatchedIonMassToChargeRatioDict.Add(productType, matchedIonMassToChargeRatioList.ToArray());
@@ -79,7 +79,7 @@ namespace EngineLayer.Localization
 
                     var gg = localizedPeptide.CompactPeptide(terminusType).ProductMassesMightHaveDuplicatesAndNaNs(ProductTypes);
                     Array.Sort(gg);
-                    var score = CalculatePeptideScoreOld(theScan, CommonParameters.ProductMassTolerance, gg, thePrecursorMass, DissociationTypes, CommonParameters.AddCompIons, 0);
+                    var score = CalculatePeptideScoreOld(theScan, CommonParameters.ProductMassTolerance, gg, thePrecursorMass, DissociationTypes, CommonParameters.AddComplementaryIons, 0);
                     localizedScores.Add(score);
                 }
 

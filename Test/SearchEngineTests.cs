@@ -349,7 +349,7 @@ namespace Test
                 precursorMassTolerance: new PpmTolerance(5),
                 digestionParams: dp,
                 scoreCutoff: 1,
-                addCompIons: true);
+                addComplementaryIons: true);
 
             var myMsDataFile = new TestDataFile("Yes, I'd like one slightly larger please");
             var variableModifications = new List<ModificationWithMass>();
@@ -399,7 +399,7 @@ namespace Test
                 digestionParams: new DigestionParams(protease: protease.Name, minPeptideLength: 5),
                 precursorMassTolerance: new PpmTolerance(5),
                 scoreCutoff: 1,
-                addCompIons: true);
+                addComplementaryIons: true);
 
             new NonSpecificEnzymeSearchEngine(allPsmsArray, listOfSortedms2Scans, peptideIndex, fragmentIndexDict, fragmentIndexDict, new List<ProductType> { ProductType.B }, 0, CommonParameters, massDiffAcceptor, SearchParameters.MaximumMassThatFragmentIonScoreIsDoubled, new List<string>()).Run();
 
@@ -445,7 +445,7 @@ namespace Test
                 digestionParams: dp,
                 scoreCutoff: 4,
                 precursorMassTolerance: new PpmTolerance(5),
-                addCompIons: true);
+                addComplementaryIons: true);
 
             var myMsDataFile = new TestDataFile("Yes, I'd like one slightly larger please");
             var variableModifications = new List<ModificationWithMass>();
@@ -593,7 +593,7 @@ namespace Test
                 digestionParams: new DigestionParams(protease: protease.Name, minPeptideLength: 5, maxModsForPeptides: 2, semiProteaseDigestion: true),
                 yIons: false,
                 scoreCutoff: 2,
-                addCompIons: true);
+                addComplementaryIons: true);
 
             HashSet<DigestionParams> digestParams = new HashSet<DigestionParams> { CommonParameters.DigestionParams };
             var indexEngine = new IndexingEngine(proteinList, variableModifications, fixedModifications, new List<ProductType> { ProductType.B }, 1, DecoyType.Reverse, digestParams, CommonParameters, 100000, new List<string>());
@@ -680,7 +680,7 @@ namespace Test
                     semiProteaseDigestion: true,
                     terminusTypeSemiProtease: TerminusType.C),
                 bIons: false,
-                addCompIons: true);
+                addComplementaryIons: true);
 
             HashSet<DigestionParams> digestParams = new HashSet<DigestionParams> { CommonParameters.DigestionParams };
             var indexEngine = new IndexingEngine(proteinList, variableModifications, fixedModifications, new List<ProductType> { ProductType.Y }, 1, DecoyType.Reverse, digestParams, CommonParameters, 30000, new List<string>());

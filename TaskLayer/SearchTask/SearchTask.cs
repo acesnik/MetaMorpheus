@@ -87,7 +87,7 @@ namespace TaskLayer
 
             // what types of fragment ions to search for
             IonTypes = new List<ProductType>();
-            if (CommonParameters.BIons && CommonParameters.AddCompIons) { IonTypes.Add(ProductType.B); }
+            if (CommonParameters.BIons && CommonParameters.AddComplementaryIons) { IonTypes.Add(ProductType.B); }
             else if (CommonParameters.BIons) { IonTypes.Add(ProductType.BnoB1ions); }
             if (CommonParameters.YIons) { IonTypes.Add(ProductType.Y); }
             if (CommonParameters.ZdotIons) { IonTypes.Add(ProductType.Zdot); }

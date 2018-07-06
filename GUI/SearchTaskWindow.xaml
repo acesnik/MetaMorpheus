@@ -400,7 +400,7 @@
                                     </Grid.ColumnDefinitions>
                                     <StackPanel>
                                         <StackPanel Orientation="Horizontal" Margin="5">
-                                            <CheckBox x:Name="AddCompIonCheckBox" Content="Generate Complementary Ions" ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
+                                            <CheckBox x:Name="AddComplementaryIonCheckBox" Content="Generate Complementary Ions" ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                                                 <CheckBox.ToolTip>
                                                     <TextBlock>
                                                         Generates experimental (not theoretical) complementary ions for each MS2.

@@ -16,7 +16,7 @@ namespace EngineLayer
 
         public CommonParameters(bool bIons = true, bool yIons = true, bool zDotIons = false, bool cIons = false, bool doPrecursorDeconvolution = true,
             bool useProvidedPrecursorInfo = true, double deconvolutionIntensityRatio = 3, int deconvolutionMaxAssumedChargeState = 12, bool reportAllAmbiguity = true,
-            bool addCompIons = false, int totalPartitions = 1, double scoreCutoff = 5, int topNpeaks = 200, double minRatio = 0.01, bool trimMs1Peaks = false,
+            bool addComplementaryIons = false, int totalPartitions = 1, double scoreCutoff = 5, int topNpeaks = 200, double minRatio = 0.01, bool trimMs1Peaks = false,
             bool trimMsMsPeaks = true, bool useDeltaScore = false, bool calculateEValue = false, Tolerance productMassTolerance = null, Tolerance precursorMassTolerance = null, Tolerance deconvolutionMassTolerance = null,
             int maxThreadsToUsePerFile = -1, DigestionParams digestionParams = null, IEnumerable<(string, string)> listOfModsVariable = null, IEnumerable<(string, string)> listOfModsFixed = null)
         {
@@ -29,7 +29,7 @@ namespace EngineLayer
             DeconvolutionIntensityRatio = deconvolutionIntensityRatio;
             DeconvolutionMaxAssumedChargeState = deconvolutionMaxAssumedChargeState;
             ReportAllAmbiguity = reportAllAmbiguity;
-            AddCompIons = addCompIons;
+            AddComplementaryIons = addComplementaryIons;
             TotalPartitions = totalPartitions;
             ScoreCutoff = scoreCutoff;
             TopNpeaks = topNpeaks;
@@ -75,7 +75,7 @@ namespace EngineLayer
         public bool CIons { get; private set; }
         public Tolerance ProductMassTolerance { get; private set; }
         public Tolerance PrecursorMassTolerance { get; private set; }
-        public bool AddCompIons { get; private set; }
+        public bool AddComplementaryIons { get; private set; }
         public double ScoreCutoff { get; private set; }
         public DigestionParams DigestionParams { get; private set; }
         public bool ReportAllAmbiguity { get; private set; }
@@ -98,7 +98,7 @@ namespace EngineLayer
                 deconvolutionIntensityRatio: DeconvolutionIntensityRatio,
                 deconvolutionMaxAssumedChargeState: DeconvolutionMaxAssumedChargeState,
                 reportAllAmbiguity: ReportAllAmbiguity,
-                addCompIons: AddCompIons,
+                addComplementaryIons: AddComplementaryIons,
                 totalPartitions: TotalPartitions,
                 scoreCutoff: ScoreCutoff,
                 topNpeaks: TopNpeaks,

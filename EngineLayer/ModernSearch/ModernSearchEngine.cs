@@ -111,7 +111,7 @@ namespace EngineLayer.ModernSearch
 
                         double scanPrecursorMass = scan.PrecursorMass;
 
-                        var thisScore = CalculatePeptideScoreOld(scan.TheScan, CommonParameters.ProductMassTolerance, productMasses, scanPrecursorMass, DissociationTypes, CommonParameters.AddCompIons, 0);
+                        var thisScore = CalculatePeptideScoreOld(scan.TheScan, CommonParameters.ProductMassTolerance, productMasses, scanPrecursorMass, DissociationTypes, CommonParameters.AddComplementaryIons, 0);
                         int notch = MassDiffAcceptor.Accepts(scan.PrecursorMass, compactPeptide.MonoisotopicMassIncludingFixedMods);
 
                         bool meetsScoreCutoff = thisScore >= CommonParameters.ScoreCutoff;
@@ -204,7 +204,7 @@ namespace EngineLayer.ModernSearch
                 }
 
                 // add complementary ions
-                if (base.CommonParameters.AddCompIons)
+                if (base.CommonParameters.AddComplementaryIons)
                 {
                     //okay, we're not actually adding in complementary m/z peaks, we're doing a shortcut and just straight up adding the bins assuming that they're z=1
                     foreach (DissociationType dissociationType in DissociationTypes)

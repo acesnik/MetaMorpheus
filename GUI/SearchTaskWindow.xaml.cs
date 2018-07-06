@@ -169,7 +169,7 @@ namespace MetaMorpheusGUI
             ProductMassToleranceComboBox.SelectedIndex = task.CommonParameters.ProductMassTolerance is AbsoluteTolerance ? 0 : 1;
             PrecursorMassToleranceTextBox.Text = task.CommonParameters.PrecursorMassTolerance.Value.ToString(CultureInfo.InvariantCulture);
             PrecursorMassToleranceComboBox.SelectedIndex = task.CommonParameters.PrecursorMassTolerance is AbsoluteTolerance ? 0 : 1;
-            AddCompIonCheckBox.IsChecked = task.CommonParameters.AddCompIons;
+            AddComplementaryIonCheckBox.IsChecked = task.CommonParameters.AddComplementaryIons;
             BCheckBox.IsChecked = task.CommonParameters.BIons;
             YCheckBox.IsChecked = task.CommonParameters.YIons;
             CCheckBox.IsChecked = task.CommonParameters.CIons;
@@ -313,7 +313,7 @@ namespace MetaMorpheusGUI
                         ProteaseComboBox.SelectedItem = ProteaseComboBox.Items.CurrentItem;
                     }
                 }
-                if (!AddCompIonCheckBox.IsChecked.Value)
+                if (!AddComplementaryIonCheckBox.IsChecked.Value)
                     MessageBox.Show("Warning: Complementary ions are strongly recommended when using this algorithm.");
             }
             if (!int.TryParse(DeconvolutionMaxAssumedChargeStateTextBox.Text, out int deconMaxAssumedCharge) || deconMaxAssumedCharge < 1)
@@ -470,7 +470,7 @@ namespace MetaMorpheusGUI
                 trimMsMsPeaks: TrimMsMsPeaks,
                 topNpeaks: TopNpeaks,
                 minRatio: MinRatio,
-                addCompIons: AddCompIonCheckBox.IsChecked.Value);
+                addComplementaryIons: AddComplementaryIonCheckBox.IsChecked.Value);
 
             if (OutputFileNameTextBox.Text != "")
             {
@@ -659,12 +659,12 @@ namespace MetaMorpheusGUI
                     ProteaseComboBox.SelectedItem = ProteaseComboBox.Items.CurrentItem;
                 }
                 ProteaseComboBox.IsEnabled = false;
-                AddCompIonCheckBox.IsChecked = true;
+                AddComplementaryIonCheckBox.IsChecked = true;
             }
             else
             {
                 ProteaseComboBox.IsEnabled = true;
-                AddCompIonCheckBox.IsChecked = false;
+                AddComplementaryIonCheckBox.IsChecked = false;
             }
         }
 
@@ -708,7 +708,7 @@ namespace MetaMorpheusGUI
 
         private void SemiSpecificUpdate(object sender, RoutedEventArgs e)
         {
-            AddCompIonCheckBox.IsChecked = SemiSpecificSearchRadioButton.IsChecked.Value;
+            AddComplementaryIonCheckBox.IsChecked = SemiSpecificSearchRadioButton.IsChecked.Value;
         }
 
         private void RadioButtonReverseDecoy_Checked(object sender, RoutedEventArgs e)

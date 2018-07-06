@@ -18,6 +18,7 @@ namespace TaskLayer
         public bool DoHistogramAnalysis { get; set; }
         public bool SearchTarget { get; set; } = true;
         public DecoyType DecoyType { get; set; } = DecoyType.Reverse;
+        public bool GenerateShuffledDecoysOnTheFly { get; set; }
         public int NumDecoyDatabases { get; set; } = 1;
         public MassDiffAcceptorType MassDiffAcceptorType { get; set; } = MassDiffAcceptorType.OneMM;
         public bool WritePrunedDatabase { get; set; }

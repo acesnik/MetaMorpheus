@@ -82,7 +82,7 @@ namespace EngineLayer.ClassicSearch
                             {
                                 var matchedIons = MatchFragmentIons(scan.TheScan.TheScan.MassSpectrum, peptideTheorIons, CommonParameters);
 
-                                if (CommonParameters.AddCompIons)
+                                if (CommonParameters.AddComplementaryIons)
                                 {
                                     foreach (var dissociationType in DissociationTypes)
                                     {
