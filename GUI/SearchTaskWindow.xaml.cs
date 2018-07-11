@@ -161,6 +161,8 @@ namespace MetaMorpheusGUI
             checkBoxDecoy.IsChecked = task.SearchParameters.DecoyType != DecoyType.None;
             radioButtonReverseDecoy.IsChecked = task.SearchParameters.DecoyType == DecoyType.Reverse;
             radioButtonSlideDecoy.IsChecked = task.SearchParameters.DecoyType == DecoyType.Slide;
+            RadioButtonShuffleDecoy.IsChecked = task.CommonParameters.DoGenerateShuffledDecoys;
+            NumDecoyDatabasesTextBox.Text = task.CommonParameters.NumDecoyDatabases.ToString();
             missedCleavagesTextBox.Text = task.CommonParameters.DigestionParams.MaxMissedCleavages == int.MaxValue ? "" : task.CommonParameters.DigestionParams.MaxMissedCleavages.ToString(CultureInfo.InvariantCulture);
             txtMinPeptideLength.Text = task.CommonParameters.DigestionParams.MinPeptideLength.ToString(CultureInfo.InvariantCulture);
             txtMaxPeptideLength.Text = task.CommonParameters.DigestionParams.MaxPeptideLength == int.MaxValue ? "" : task.CommonParameters.DigestionParams.MaxPeptideLength.ToString(CultureInfo.InvariantCulture);
@@ -342,6 +344,11 @@ namespace MetaMorpheusGUI
                 MessageBox.Show("The number of database partitions was set to zero. At least one database is required for searching.");
                 return;
             }
+            if (!int.TryParse(NumDecoyDatabasesTextBox.Text, out int numDecoyDatabases))
+            {
+                MessageBox.Show("The number of shuffled decoy databases is not valid.");
+                return;
+            }
             if (string.IsNullOrEmpty(missedCleavagesTextBox.Text))
             {
                 missedCleavagesTextBox.Text = int.MaxValue.ToString();
@@ -457,6 +464,8 @@ namespace MetaMorpheusGUI
                 doPrecursorDeconvolution: deconvolutePrecursors.IsChecked.Value,
                 useProvidedPrecursorInfo: useProvidedPrecursor.IsChecked.Value,
                 scoreCutoff: double.Parse(minScoreAllowed.Text, CultureInfo.InvariantCulture),
+                doGenerateShuffledDecoys: RadioButtonShuffleDecoy.IsChecked.Value,
+                numDecoyDatabases: numDecoyDatabases,
                 calculateEValue: eValueCheckBox.IsChecked.Value,
                 listOfModsFixed: listOfModsFixed,
                 listOfModsVariable: listOfModsVariable,
@@ -506,26 +515,38 @@ namespace MetaMorpheusGUI
             TheTask.SearchParameters.OutMzId = ckbMzId.IsChecked.Value;
             //TheTask.SearchParameters.OutPepXML = ckbPepXML.IsChecked.Value;
 
-            if (checkBoxDecoy.IsChecked.Value)
+            // Decoy type selection
+            if (!checkBoxDecoy.IsChecked.Value)
+            {
+                TheTask.SearchParameters.DecoyType = DecoyType.None;
+            }
+            else
             {
                 if (radioButtonReverseDecoy.IsChecked.Value)
                 {
                     TheTask.SearchParameters.DecoyType = DecoyType.Reverse;
                 }
-                else //if (radioButtonSlideDecoy.IsChecked.Value)
+                else if (radioButtonSlideDecoy.IsChecked.Value)
                 {
                     TheTask.SearchParameters.DecoyType = DecoyType.Slide;
                 }
-            }
-            else
-            {
-                TheTask.SearchParameters.DecoyType = DecoyType.None;
+                else if (RadioButtonShuffleDecoy.IsChecked.Value)
+                {
+                    TheTask.SearchParameters.DecoyType = DecoyType.Shuffle;
+                }
+                else
+                {
+                    throw new NotImplementedException("The decoy type selected has not been implemented.");
+                }
             }
 
+            // Maximum threads to use
             if (!maxThreadsTextBox.Text.Equals("") && (int.Parse(maxThreadsTextBox.Text) <= Environment.ProcessorCount && int.Parse(maxThreadsTextBox.Text) > 0))
             {
                 CommonParamsToSave.MaxThreadsToUsePerFile = int.Parse(maxThreadsTextBox.Text, CultureInfo.InvariantCulture);
             }
+
+            // Mass difference acceptor selection
             if (massDiffAcceptExact.IsChecked.HasValue && massDiffAcceptExact.IsChecked.Value)
             {
                 TheTask.SearchParameters.MassDiffAcceptorType = MassDiffAcceptorType.Exact;
@@ -556,15 +577,16 @@ namespace MetaMorpheusGUI
                 TheTask.SearchParameters.CustomMdac = customkMdacTextBox.Text;
             }
 
+            // Histogram analysis selections
             TheTask.SearchParameters.DoHistogramAnalysis = checkBoxHistogramAnalysis.IsChecked.Value;
             TheTask.SearchParameters.HistogramBinTolInDaltons = double.Parse(histogramBinWidthTextBox.Text, CultureInfo.InvariantCulture);
 
+            // Pruned database selection
             TheTask.SearchParameters.WritePrunedDatabase = writePrunedDBCheckBox.IsChecked.Value;
-
             SetModSelectionForPrunedDB();
 
+            // Final save
             TheTask.CommonParameters = CommonParamsToSave;
-
             DialogResult = true;
         }
 
@@ -701,6 +723,18 @@ namespace MetaMorpheusGUI
         private void SemiSpecificUpdate(object sender, RoutedEventArgs e)
         {
             addCompIonCheckBox.IsChecked = semiSpecificSearchRadioButton.IsChecked.Value;
+        }
+
+        private void RadioButtonReverseDecoy_Checked(object sender, RoutedEventArgs e)
+        {
+            TheTask.CommonParameters.NumDecoyDatabases = 1;
+            NumDecoyDatabasesTextBox.Text = 1.ToString(CultureInfo.InvariantCulture);
+        }
+
+        private void RadioButtonSlideDecoy_Checked(object sender, RoutedEventArgs e)
+        {
+            TheTask.CommonParameters.NumDecoyDatabases = 1;
+            NumDecoyDatabasesTextBox.Text = 1.ToString(CultureInfo.InvariantCulture);
         }
     }
 

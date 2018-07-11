@@ -15,7 +15,7 @@ namespace EngineLayer
 
         public CommonParameters(bool bIons = true, bool yIons = true, bool zDotIons = false, bool cIons = false, bool doPrecursorDeconvolution = true,
             bool useProvidedPrecursorInfo = true, double deconvolutionIntensityRatio = 3, int deconvolutionMaxAssumedChargeState = 12, bool reportAllAmbiguity = true,
-            bool addCompIons = false, int totalPartitions = 1, double scoreCutoff = 5, int topNpeaks = 200, double minRatio = 0.01, bool trimMs1Peaks = false,
+            bool addCompIons = false, bool doGenerateShuffledDecoys = false, int numDecoyDatabases = 1, int totalPartitions = 1, double scoreCutoff = 5, int topNpeaks = 200, double minRatio = 0.01, bool trimMs1Peaks = false,
             bool trimMsMsPeaks = true, bool useDeltaScore = false, bool calculateEValue = false, Tolerance productMassTolerance = null, Tolerance precursorMassTolerance = null, Tolerance deconvolutionMassTolerance = null,
             int maxThreadsToUsePerFile = -1, DigestionParams digestionParams = null, IEnumerable<(string, string)> listOfModsVariable = null, IEnumerable<(string, string)> listOfModsFixed = null)
         {
@@ -38,6 +38,8 @@ namespace EngineLayer
             UseDeltaScore = useDeltaScore;
             CalculateEValue = calculateEValue;
             MaxThreadsToUsePerFile = maxThreadsToUsePerFile;
+            DoGenerateShuffledDecoys = doGenerateShuffledDecoys;
+            NumDecoyDatabases = numDecoyDatabases;
 
             ProductMassTolerance = productMassTolerance ?? new PpmTolerance(20);
             PrecursorMassTolerance = precursorMassTolerance ?? new PpmTolerance(5);
@@ -58,7 +60,8 @@ namespace EngineLayer
 
         //Any new property must not be nullable (int?) or else if it is null, the null setting will not be written to a toml and the default will override (so it's okay if the default is null)
         public string TaskDescriptor { get; set; }
-
+        public bool DoGenerateShuffledDecoys { get; set; }
+        public int NumDecoyDatabases { get; set; } = 1;
         public int MaxThreadsToUsePerFile { get; set; }
         public IEnumerable<(string, string)> ListOfModsFixed { get; private set; }
         public IEnumerable<(string, string)> ListOfModsVariable { get; private set; }
@@ -98,6 +101,8 @@ namespace EngineLayer
                 deconvolutionMaxAssumedChargeState: this.DeconvolutionMaxAssumedChargeState,
                 reportAllAmbiguity: this.ReportAllAmbiguity,
                 addCompIons: this.AddCompIons,
+                doGenerateShuffledDecoys: this.DoGenerateShuffledDecoys,
+                numDecoyDatabases: this.NumDecoyDatabases,
                 totalPartitions: this.TotalPartitions,
                 scoreCutoff: this.ScoreCutoff,
                 topNpeaks: this.TopNpeaks,
