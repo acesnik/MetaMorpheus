@@ -505,7 +505,7 @@ namespace MetaMorpheusGUI
             SetModSelectionForPrunedDB();
 
             // Final save
-            TheTask.CommonParameters = CommonParamsToSave;
+            TheTask.CommonParameters = commonParamsToSave;
             DialogResult = true;
         }
 
@@ -646,13 +646,11 @@ namespace MetaMorpheusGUI
 
         private void RadioButtonReverseDecoy_Checked(object sender, RoutedEventArgs e)
         {
-            TheTask.CommonParameters.NumDecoyDatabases = 1;
             NumDecoyDatabasesTextBox.Text = 1.ToString(CultureInfo.InvariantCulture);
         }
 
         private void RadioButtonSlideDecoy_Checked(object sender, RoutedEventArgs e)
         {
-            TheTask.CommonParameters.NumDecoyDatabases = 1;
             NumDecoyDatabasesTextBox.Text = 1.ToString(CultureInfo.InvariantCulture);
         }
     }
