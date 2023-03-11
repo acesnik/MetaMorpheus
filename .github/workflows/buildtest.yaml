@@ -33,6 +33,7 @@ jobs:
         verbose: true
         files: MetaMorpheus/Test/TestResults/*/coverage.cobertura.xml
 
+
   BuildAndTestInstaller:
     runs-on: windows-latest
     timeout-minutes: 15
@@ -58,6 +59,7 @@ jobs:
       run: dotnet build --no-restore /p:Platform=x64 --configuration Release MetaMorpheus/CMD/CMD.csproj
     - name: Commandline search with installed MetaMorpheus
       run: ls "C:\Program Files\MetaMorpheus"; dotnet "C:\Program Files\MetaMorpheus\CMD.dll" -s $CMD_DIR\Data\SmallCalibratible_Yeast.mzML -d $CMD_DIR\Data\SmallYeast.fasta -t $CMD_DIR\Data\SearchTask.toml -v minimal
+
 
   CMDAndLinuxDockerTests:
     runs-on: ubuntu-latest
