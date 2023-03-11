@@ -1,0 +1,101 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CMD_DIR: MetaMorpheus/CMD/bin/x64/Release/net6.0
+
+jobs:
+  BuildAndTest:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x 
+    - name: Restore dependencies
+      run: dotnet restore MetaMorpheus/MetaMorpheus.sln
+    - name: Build
+      run: dotnet build --no-restore MetaMorpheus/MetaMorpheus.sln
+    - name: Add coverlet collector
+      run: dotnet add MetaMorpheus/Test/Test.csproj package coverlet.collector
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=cobertura MetaMorpheus/Test/Test.csproj
+    - name: Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        verbose: true
+        files: MetaMorpheus/Test/TestResults/*/coverage.cobertura.xml
+
+  BuildAndTestInstaller:
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup msbuild
+      uses: microsoft/setup-msbuild@v1.1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore installer
+      run: dotnet restore MetaMorpheus/MetaMorpheusSetup/MetaMorpheusSetup.wixproj
+    - name: Build Installer
+      run: msbuild MetaMorpheus/MetaMorpheusSetup/MetaMorpheusSetup.wixproj /p:Configuration=Release
+    - name: Install MetaMorpheus
+      run: |
+        Write-Host "Installing MetaMorpheus" -BackgroundColor Blue
+        Start-Process -Wait -FilePath msiexec -ArgumentList /i, MetaMorpheus/MetaMorpheusSetup/bin/Release/MetaMorpheusInstaller.msi, /qn, /l*v, "install.log"
+    - name: Restore dependencies
+      run: dotnet restore MetaMorpheus/CMD/CMD.csproj
+    - name: Build CMD
+      run: dotnet build --no-restore /p:Platform=x64 --configuration Release MetaMorpheus/CMD/CMD.csproj
+    - name: Commandline search with installed MetaMorpheus
+      run: ls "C:\Program Files\MetaMorpheus"; dotnet "C:\Program Files\MetaMorpheus\CMD.dll" -s $CMD_DIR\Data\SmallCalibratible_Yeast.mzML -d $CMD_DIR\Data\SmallYeast.fasta -t $CMD_DIR\Data\SearchTask.toml -v minimal
+
+  CMDAndLinuxDockerTests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore MetaMorpheus/CMD/CMD.csproj
+    - name: Build CMD
+      run: dotnet build --no-restore /p:Platform=x64 --configuration Release MetaMorpheus/CMD/CMD.csproj
+    - name: Generate .toml files
+      run: dotnet $CMD_DIR/CMD.dll -g -o $CMD_DIR/Data
+    - name: Commandline search
+      run: dotnet $CMD_DIR/CMD.dll -s $CMD_DIR/Data/SmallCalibratible_Yeast.mzML -d $CMD_DIR/Data/SmallYeast.fasta -t $CMD_DIR/Data/SearchTask.toml -v minimal
+    - name: Create archive
+      uses: thedoctor0/zip-release@0.7.1
+      with:
+        type: 'zip'
+        filename: 'MetaMorpheus_CommandLine.zip'
+        path: '$CMD_DIR'
+        directory: ./
+    - name: Test zipping commandline version. Fail build if .zip is <1kb (i.e., is empty).
+      run: |
+        If ((Get-Item MetaMorpheus_CommandLine.zip).length -lt 1kb)
+        {
+        Write-Host "The build failed because the command-line .zip did not build properly; is it empty?" -BackgroundColor Red
+        $host.SetShouldExit(1)
+        }
+    - name: Build Linux docker image
+      run: |
+        cd MetaMorpheus
+        docker build -t smithchemwisc/metamorpheus:dev .
+    - name: Run Linux docker Test
+      run: |
+        cd $CMD_DIR 
+        docker run --rm -v Data:/mnt/data smithchemwisc/metamorpheus:dev --test -o /mnt/data/DockerMicrovignetteOutput -v minimal
+
