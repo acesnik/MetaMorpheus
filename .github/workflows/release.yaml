@@ -8,7 +8,7 @@ on:
 env:
   DOTNET_VERSION: 8.0.x
   DOTNET_FRAMEWORK: net8.0
-  NUGET_VERSION: 8.x
+  NUGET_VERSION: 6.x
 
 jobs:
   githubrelease:
