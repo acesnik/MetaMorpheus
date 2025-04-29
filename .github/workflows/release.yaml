@@ -35,17 +35,17 @@ jobs:
       - name: Build
         run: |
           $version= &git describe --tags &&
-          dotnet build --no-restore --configuration Release /p:Version=${version} /p:Platform=x64 MetaMorpheus/MetaMorpheus.sln
+          dotnet build --no-restore --configuration Release /p:Version=$version /p:Platform=x64 MetaMorpheus/MetaMorpheus.sln
       - name: Test
         run: |
           $version= &git describe --tags &&
-          dotnet test --configuration Release /p:Platform=x64 /p:Version=${version} --no-build MetaMorpheus/MetaMorpheus.sln
+          dotnet test --configuration Release /p:Platform=x64 /p:Version=$version --no-build MetaMorpheus/MetaMorpheus.sln
       - name: Setup msbuild
         uses: microsoft/setup-msbuild@v2
       - name: Build Installer
         run: |
           $version= &git describe --tags &&
-          msbuild MetaMorpheus/MetaMorpheusSetup/MetaMorpheusSetup.wixproj  /p:Configuration=Release /p:Version=${version}
+          msbuild MetaMorpheus/MetaMorpheusSetup/MetaMorpheusSetup.wixproj  /p:Configuration=Release /p:Version=$version
       - name: Sign Installer
         run: |
           # Install decryption package (needed for adding security certificate to installer)
@@ -62,7 +62,7 @@ jobs:
         with:
           type: 'zip'
           filename: 'MetaMorpheus_CommandLine.zip'
-          path: CMD/bin/x64/Release/$DOTNET_FRAMEWORK/
+          path: MetaMorpheus/CMD/bin/x64/Release/$DOTNET_FRAMEWORK/
           directory: ./
       - name: Upload MetaMorpheus
         uses: svenstaro/upload-release-action@v2
@@ -92,7 +92,7 @@ jobs:
     - name: Build SpritzCMD
       run: dotnet build --no-restore /p:Platform=x64 --configuration Release MetaMorpheus/CMD/CMD.csproj
     - name: Build docker image
-      run: docker build -f Dockerfile_WindowsInstaller -t smithchemwisc/metamorpheus:windowsinstaller .
+      run: docker build -f Dockerfile_WindowsInstaller -t smithchemwisc/metamorpheus:windowsinstaller MetaMorpheus/
     - name: Run quick test, reference database
       run: docker run --rm -v MetaMorpheus/CMD/bin/x64/Release/$env:DOTNET_FRAMEWORK/Data:C:\Output smithchemwisc/metamorpheus:windowsinstaller --test -o C:\Output\DockerMicrovignetteOutput -v minimal
     - name: Login, tag, and push
