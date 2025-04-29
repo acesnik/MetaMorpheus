@@ -31,21 +31,21 @@ jobs:
         env:
           RELEASE_BRANCH: master
       - name: Restore dependencies
-        run: dotnet restore MetaMorpheus.sln
+        run: dotnet restore MetaMorpheus/MetaMorpheus.sln
       - name: Build
         run: |
           $version= &git describe --tags &&
-          dotnet build --no-restore --configuration Release /p:Version=${version} /p:Platform=x64 MetaMorpheus.sln
+          dotnet build --no-restore --configuration Release /p:Version=${version} /p:Platform=x64 MetaMorpheus/MetaMorpheus.sln
       - name: Test
         run: |
           $version= &git describe --tags &&
-          dotnet test --configuration Release /p:Platform=x64 /p:Version=${version} --no-build MetaMorpheus.sln
+          dotnet test --configuration Release /p:Platform=x64 /p:Version=${version} --no-build MetaMorpheus/MetaMorpheus.sln
       - name: Setup msbuild
-        uses: microsoft/setup-msbuild@v1
+        uses: microsoft/setup-msbuild@v2
       - name: Build Installer
         run: |
           $version= &git describe --tags &&
-          msbuild MetaMorpheusSetup/MetaMorpheusSetup.wixproj  /p:Configuration=Release /p:Version=${version}
+          msbuild MetaMorpheus/MetaMorpheusSetup/MetaMorpheusSetup.wixproj  /p:Configuration=Release /p:Version=${version}
       - name: Sign Installer
         run: |
           # Install decryption package (needed for adding security certificate to installer)
@@ -74,7 +74,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.UPLOAD_TOKEN }}
-          file: MetaMorpheusSetup/bin/Release/MetaMorpheusInstaller.msi
+          file: MetaMorpheus/MetaMorpheusSetup/bin/Release/MetaMorpheusInstaller.msi
           tag: ${{ github.ref }}
 
 
