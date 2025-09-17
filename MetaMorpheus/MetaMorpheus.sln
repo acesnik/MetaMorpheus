@@ -22,6 +22,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Bootstrapper", "Bootstrapper\Bootstrapper.wixproj", "{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MetaMorpheus.Maui", "MetaMorpheus.Maui\MetaMorpheus.Maui.csproj", "{7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,10 +73,16 @@ Global
 		{7EE028A9-75A2-450F-A9A7-76559ED15419}.UbuntuMac|Any CPU.Build.0 = Release|Any CPU
 		{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Debug|Any CPU.Build.0 = Debug|x64
-		{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Release|Any CPU.ActiveCfg = Release|x64
-		{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Release|Any CPU.Build.0 = Release|x64
-		{E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.UbuntuMac|Any CPU.ActiveCfg = Release|x64
-	EndGlobalSection
+                {E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Release|Any CPU.ActiveCfg = Release|x64
+                {E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.Release|Any CPU.Build.0 = Release|x64
+                {E0EA5AC4-24A9-43DC-8FBC-CCEB3B9935B6}.UbuntuMac|Any CPU.ActiveCfg = Release|x64
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.Release|Any CPU.Build.0 = Release|Any CPU
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.UbuntuMac|Any CPU.ActiveCfg = Release|Any CPU
+                {7A5A5D39-FFC1-46B7-A830-D99CD9040BE1}.UbuntuMac|Any CPU.Build.0 = Release|Any CPU
+        EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection

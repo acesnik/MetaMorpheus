@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MetaMorpheus.Maui.MainPage"
+             Title="MetaMorpheus">
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="18">
+            <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
+                <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="24" HorizontalOptions="Center" />
+                <Label Text="{Binding Subtitle}" FontSize="14" TextColor="#4B5563" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <Frame BorderColor="#E5E7EB" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Spectra files" FontAttributes="Bold" />
+                    <Button Text="Add spectra files"
+                            Command="{Binding AddSpectraCommand}" />
+                    <CollectionView ItemsSource="{Binding SpectraFiles}" HeightRequest="140">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="* , Auto" Padding="4,0">
+                                    <Label Text="{Binding}" VerticalOptions="Center" />
+                                    <Button Text="Remove"
+                                            Margin="12,0,0,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveSpectraCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="#E5E7EB" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Protein databases" FontAttributes="Bold" />
+                    <Button Text="Add protein databases"
+                            Command="{Binding AddProteinDatabaseCommand}" />
+                    <CollectionView ItemsSource="{Binding ProteinDatabases}" HeightRequest="140">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="* , Auto" Padding="4,0">
+                                    <Label VerticalOptions="Center">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Path}" />
+                                                <Span Text="{Binding DisplayAnnotation}" FontAttributes="Italic" TextColor="#9CA3AF" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Button Text="Remove"
+                                            Margin="12,0,0,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveProteinDatabaseCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="#E5E7EB" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="12">
+                    <Label Text="Tasks" FontAttributes="Bold" />
+                    <Button Text="Add task (.toml)"
+                            Command="{Binding AddTaskCommand}" />
+                    <CollectionView ItemsSource="{Binding Tasks}" HeightRequest="160">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="* , Auto" Padding="4,0">
+                                    <VerticalStackLayout Spacing="2">
+                                        <Label Text="{Binding DisplayName}" FontAttributes="Bold" />
+                                        <Label Text="{Binding SourcePath}" FontSize="12" TextColor="#6B7280" />
+                                    </VerticalStackLayout>
+                                    <Button Text="Remove"
+                                            Margin="12,0,0,0"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.RemoveTaskCommand}"
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+
+            <Frame BorderColor="#E5E7EB" CornerRadius="12" Padding="16">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Output folder" FontAttributes="Bold" />
+                    <Entry Text="{Binding OutputFolder}" />
+                    <Label Text="{Binding OutputFolderDescription}" FontSize="12" TextColor="#6B7280" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                <Button Text="Run analysis"
+                        Grid.Column="0"
+                        Command="{Binding RunCommand}" />
+                <Button Text="Clear log"
+                        Grid.Column="1"
+                        Command="{Binding ClearLogCommand}" />
+            </Grid>
+
+            <ProgressBar Progress="{Binding Progress}" HeightRequest="10" />
+            <Label Text="{Binding StatusMessage}" FontAttributes="Italic" />
+
+            <Frame BorderColor="#E5E7EB" CornerRadius="12" Padding="12">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Log" FontAttributes="Bold" />
+                    <CollectionView ItemsSource="{Binding LogEntries}" HeightRequest="200">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+                                <Label Text="{Binding .}" FontSize="12" />
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+            </Frame>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
