@@ -281,34 +281,51 @@ namespace Test
         }
 
         /// <summary>
-        /// Copying or restoring a database without changing its contents must NOT invalidate the cache key,
-        /// otherwise the user pays for a full re-index after simply moving files around. CreationTime is reset
-        /// by a copy; LastWriteTimeUtc is preserved by cp -p, rsync and unzip.
+        /// The key must depend on the database's revision, not on when the file was created, so changing only
+        /// the creation time must leave it untouched. A creation stamp is the wrong thing to key on: tools that
+        /// reset it (copies and restores, depending on platform and filesystem) would force a needless
+        /// re-index, while an in-place edit that leaves it alone would not invalidate anything.
         /// </summary>
         [Test]
-        public static void IndexCacheKeyIsStableAcrossAContentPreservingCopy()
+        public static void IndexCacheKeyIgnoresTheDatabaseCreationTime()
         {
-            string directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_Copy");
-            string copyDirectory = Path.Combine(directory, "copy");
-            Directory.CreateDirectory(copyDirectory);
+            string directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_CreationTime");
+            Directory.CreateDirectory(directory);
 
             try
             {
-                string originalPath = Path.Combine(directory, "db.fasta");
-                // Same file name in a different folder: the key records the name, not the full path.
-                string copyPath = Path.Combine(copyDirectory, "db.fasta");
+                string databasePath = Path.Combine(directory, "db.fasta");
                 var proteinList = new List<Protein> { new Protein("MNNNKQQQK", "P1") };
 
-                WriteFasta(originalPath, "P1", "MNNNKQQQK");
-                string originalKey = DatabaseLineOf(BuildEngineForDatabases(proteinList, originalPath));
+                WriteFasta(databasePath, "P1", "MNNNKQQQK");
+                string keyBefore = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
 
-                File.Copy(originalPath, copyPath);
-                File.SetLastWriteTimeUtc(copyPath, File.GetLastWriteTimeUtc(originalPath));
+                // Move the creation time only. Contents and last-write time are untouched, so as far as the
+                // index is concerned nothing has changed and the key must not move.
+                DateTime backdated = DateTime.UtcNow.AddHours(-2);
+                DateTime lastWriteBefore = File.GetLastWriteTimeUtc(databasePath);
+                try
+                {
+                    File.SetCreationTimeUtc(databasePath, backdated);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    Assert.Ignore("This platform cannot set a file's creation time.");
+                }
 
-                string copyKey = DatabaseLineOf(BuildEngineForDatabases(proteinList, copyPath));
+                // Not every platform and filesystem stores a creation time; skip rather than pass vacuously.
+                if (Math.Abs((File.GetCreationTimeUtc(databasePath) - backdated).TotalMinutes) > 1)
+                {
+                    Assert.Ignore("This platform does not track a settable creation time.");
+                }
 
-                Assert.That(copyKey, Is.EqualTo(originalKey),
-                    "copying a database without changing its contents must not invalidate the index cache key");
+                Assert.That(File.GetLastWriteTimeUtc(databasePath), Is.EqualTo(lastWriteBefore),
+                    "test precondition: the last write time must not have moved");
+
+                string keyAfter = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
+
+                Assert.That(keyAfter, Is.EqualTo(keyBefore),
+                    "the index cache key must not depend on the database's creation time");
             }
             finally
             {
