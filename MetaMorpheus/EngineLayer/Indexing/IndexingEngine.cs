@@ -5,6 +5,7 @@ using Omics.Fragmentation;
 using Proteomics.ProteolyticDigestion;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,7 +60,22 @@ namespace EngineLayer.Indexing
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Databases: " + string.Join(",", ProteinDatabases.OrderBy(p => p.Name).Select(p => p.Name + ":" + p.CreationTime)));
+            // This string is the cache key for a written index: it is saved as indexEngine.params and compared
+            // verbatim by MetaMorpheusTask.SameSettings to decide whether an existing index may be reused.
+            // The database identity must therefore be a *revision* stamp, not a creation stamp:
+            //   - LastWriteTimeUtc changes when a database is edited in place (CreationTime does not), so a
+            //     stale index can no longer be reused against a modified database.
+            //   - LastWriteTimeUtc is preserved by copy/restore tools (CreationTime is not), so simply moving
+            //     a database no longer forces a full re-index.
+            //   - UTC and the invariant round-trip format keep the key stable across time zone, DST and locale
+            //     changes, which would otherwise silently invalidate every index on disk.
+            // Length is a cheap extra guard against edits that happen to preserve the timestamp. It is read
+            // only when the file is present, because FileInfo.Length throws for a missing file whereas the
+            // timestamp properties return a sentinel - this keeps the key exception-free, as it was before.
+            sb.AppendLine("Databases: " + string.Join(",", ProteinDatabases
+                .OrderBy(p => p.Name, StringComparer.Ordinal)
+                .Select(p => p.Name + ":" + p.LastWriteTimeUtc.ToString("O", CultureInfo.InvariantCulture)
+                             + ":" + (p.Exists ? p.Length : -1L))));
             sb.AppendLine("Partitions: " + CurrentPartition + "/" + CommonParameters.TotalPartitions);
             sb.AppendLine("Precursor Index: " + GeneratePrecursorIndex);
             sb.AppendLine("Search Decoys: " + DecoyType);

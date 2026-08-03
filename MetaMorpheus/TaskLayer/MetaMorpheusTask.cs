@@ -1328,9 +1328,18 @@ namespace TaskLayer
                 string baseDir = Path.GetDirectoryName(database.FilePath);
                 DirectoryInfo indexDirectory = new DirectoryInfo(Path.Combine(baseDir, IndexFolderName));
 
+                // Keep looking through the remaining databases rather than giving up here. An index is always
+                // written next to dbFilenameList.First(), which is the caller's (unsorted) order, while the
+                // cache key sorts the databases by name. The same set of databases supplied in a different
+                // order therefore has an identical key but can have its index stored beside a different
+                // database - common when a contaminant database in the MetaMorpheus data directory is paired
+                // with a user database elsewhere on disk. Bailing out on the first database without an index
+                // folder made those runs re-index from scratch. CheckFiles/SameSettings still validate every
+                // candidate against the full parameter string, so widening the search cannot accept an index
+                // that would not already have been accepted.
                 if (!Directory.Exists(indexDirectory.FullName))
                 {
-                    return null;
+                    continue;
                 }
 
                 // all directories in the same directory as the bioPolymer database

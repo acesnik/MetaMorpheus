@@ -1,4 +1,5 @@
 ﻿using EngineLayer;
+using EngineLayer.DatabaseLoading;
 using EngineLayer.Indexing;
 using MassSpectrometry;
 using NUnit.Framework;
@@ -7,10 +8,12 @@ using Omics.Fragmentation;
 using Proteomics.ProteolyticDigestion;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using Omics.Digestion;
 using Omics.Modifications;
+using TaskLayer;
 using UsefulProteomicsDatabases;
 
 namespace Test
@@ -202,5 +205,238 @@ namespace Test
                 Assert.That(results.PeptideIndex.Contains(fdfd));
             }
         }
+
+        #region Index cache key and reuse (issue #412)
+
+        // IndexingEngine.ToString() is the cache key for an index written to disk: it is saved as
+        // indexEngine.params and compared verbatim by MetaMorpheusTask.SameSettings to decide whether an
+        // existing index may be reused. These tests pin down the database-identity portion of that key and
+        // the folder search that consumes it.
+
+        private const int SmallMaxFragmentSize = 2000;
+
+        /// <summary>
+        /// Builds an IndexingEngine that differs from its siblings only in the database files backing its
+        /// cache key. Unlike the tests above, this passes real files rather than an empty FileInfo list.
+        /// </summary>
+        private static IndexingEngine BuildEngineForDatabases(List<Protein> proteinList, params string[] databasePaths)
+        {
+            CommonParameters commonParameters = new CommonParameters(scoreCutoff: 1,
+                digestionParams: new DigestionParams(protease: "trypsin", minPeptideLength: 1));
+            var fsp = new List<(string fileName, CommonParameters fileSpecificParameters)> { ("", commonParameters) };
+
+            return new IndexingEngine(proteinList, new List<Modification>(), new List<Modification>(), null, null, null, 0,
+                DecoyType.None, commonParameters, fsp, SmallMaxFragmentSize, false,
+                databasePaths.Select(p => new FileInfo(p)).ToList(),
+                TargetContaminantAmbiguity.RemoveContaminant, new List<string>());
+        }
+
+        /// <summary>
+        /// The "Databases: ..." line of the cache key, which carries each database's name and revision stamp.
+        /// </summary>
+        private static string DatabaseLineOf(IndexingEngine engine)
+        {
+            return engine.ToString().Split('\n').First().TrimEnd('\r');
+        }
+
+        private static void WriteFasta(string path, string accession, string sequence)
+        {
+            File.WriteAllText(path, ">sp|" + accession + "|" + accession + "_TEST test protein\n" + sequence + "\n");
+        }
+
+        /// <summary>
+        /// A database edited in place must invalidate the index cache key, otherwise a stale index built from
+        /// the previous contents is silently reused and the search reports the wrong peptides. The key used to
+        /// be built from FileInfo.CreationTime, which an in-place edit does not change.
+        /// </summary>
+        [Test]
+        public static void IndexCacheKeyChangesWhenDatabaseIsEditedInPlace()
+        {
+            string directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_InPlaceEdit");
+            Directory.CreateDirectory(directory);
+
+            try
+            {
+                string databasePath = Path.Combine(directory, "db.fasta");
+                var proteinList = new List<Protein> { new Protein("MNNNKQQQK", "P1") };
+
+                WriteFasta(databasePath, "P1", "MNNNKQQQK");
+                string keyBeforeEdit = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
+
+                // Rewrite the file, keeping the same name and byte count so that only the revision stamp differs.
+                // The timestamp is advanced explicitly so the test does not depend on filesystem timestamp
+                // granularity; CreationTime is left untouched, which is exactly the case that used to slip through.
+                WriteFasta(databasePath, "P1", "MNNNKQQQR");
+                File.SetLastWriteTimeUtc(databasePath, File.GetLastWriteTimeUtc(databasePath).AddMinutes(1));
+
+                string keyAfterEdit = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
+
+                Assert.That(keyAfterEdit, Is.Not.EqualTo(keyBeforeEdit),
+                    "editing a database in place must invalidate the index cache key");
+            }
+            finally
+            {
+                Directory.Delete(directory, true);
+            }
+        }
+
+        /// <summary>
+        /// Copying or restoring a database without changing its contents must NOT invalidate the cache key,
+        /// otherwise the user pays for a full re-index after simply moving files around. CreationTime is reset
+        /// by a copy; LastWriteTimeUtc is preserved by cp -p, rsync and unzip.
+        /// </summary>
+        [Test]
+        public static void IndexCacheKeyIsStableAcrossAContentPreservingCopy()
+        {
+            string directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_Copy");
+            string copyDirectory = Path.Combine(directory, "copy");
+            Directory.CreateDirectory(copyDirectory);
+
+            try
+            {
+                string originalPath = Path.Combine(directory, "db.fasta");
+                // Same file name in a different folder: the key records the name, not the full path.
+                string copyPath = Path.Combine(copyDirectory, "db.fasta");
+                var proteinList = new List<Protein> { new Protein("MNNNKQQQK", "P1") };
+
+                WriteFasta(originalPath, "P1", "MNNNKQQQK");
+                string originalKey = DatabaseLineOf(BuildEngineForDatabases(proteinList, originalPath));
+
+                File.Copy(originalPath, copyPath);
+                File.SetLastWriteTimeUtc(copyPath, File.GetLastWriteTimeUtc(originalPath));
+
+                string copyKey = DatabaseLineOf(BuildEngineForDatabases(proteinList, copyPath));
+
+                Assert.That(copyKey, Is.EqualTo(originalKey),
+                    "copying a database without changing its contents must not invalidate the index cache key");
+            }
+            finally
+            {
+                Directory.Delete(directory, true);
+            }
+        }
+
+        /// <summary>
+        /// The key is persisted to disk and compared as text, so it must not depend on the current culture -
+        /// otherwise a locale change silently invalidates every index a user has. The timestamp used to be
+        /// formatted with the ambient culture.
+        /// </summary>
+        [Test]
+        public static void IndexCacheKeyIsCultureInvariant()
+        {
+            string directory = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_Culture");
+            Directory.CreateDirectory(directory);
+
+            var originalCulture = CultureInfo.CurrentCulture;
+
+            try
+            {
+                string databasePath = Path.Combine(directory, "db.fasta");
+                var proteinList = new List<Protein> { new Protein("MNNNKQQQK", "P1") };
+                WriteFasta(databasePath, "P1", "MNNNKQQQK");
+
+                CultureInfo.CurrentCulture = new CultureInfo("en-US");
+                string invariantUnitedStates = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
+
+                // de-DE formats dates and decimal separators differently from en-US.
+                CultureInfo.CurrentCulture = new CultureInfo("de-DE");
+                string invariantGermany = DatabaseLineOf(BuildEngineForDatabases(proteinList, databasePath));
+
+                Assert.That(invariantGermany, Is.EqualTo(invariantUnitedStates),
+                    "the index cache key must not vary with the current culture");
+            }
+            finally
+            {
+                CultureInfo.CurrentCulture = originalCulture;
+                Directory.Delete(directory, true);
+            }
+        }
+
+        /// <summary>
+        /// Building the key must not throw for a database file that is not on disk. The timestamp properties
+        /// return a sentinel for a missing file, but FileInfo.Length throws, so the length is only read when
+        /// the file is present.
+        /// </summary>
+        [Test]
+        public static void IndexCacheKeyDoesNotThrowForAMissingDatabaseFile()
+        {
+            string missingPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexCacheKey_DoesNotExist.fasta");
+            Assert.That(File.Exists(missingPath), Is.False, "test precondition");
+
+            var proteinList = new List<Protein> { new Protein("MNNNKQQQK", "P1") };
+
+            Assert.DoesNotThrow(() => DatabaseLineOf(BuildEngineForDatabases(proteinList, missingPath)));
+        }
+
+        /// <summary>
+        /// An index is always written beside dbFilenameList.First() (the caller's unsorted order) while the
+        /// cache key sorts databases by name. The same set of databases supplied in a different order therefore
+        /// has an identical key but its index living beside a different database. GetExistingFolderWithIndices
+        /// used to give up as soon as the first database had no index folder, re-indexing from scratch instead.
+        /// </summary>
+        [Test]
+        public static void ExistingIndexIsFoundWhenDatabaseOrderIsReversed()
+        {
+            string root = Path.Combine(TestContext.CurrentContext.TestDirectory, "IndexReuse_ReversedOrder");
+            string firstDirectory = Path.Combine(root, "dbA");
+            string secondDirectory = Path.Combine(root, "dbB");
+            Directory.CreateDirectory(firstDirectory);
+            Directory.CreateDirectory(secondDirectory);
+
+            try
+            {
+                string firstDatabase = Path.Combine(firstDirectory, "a.fasta");
+                string secondDatabase = Path.Combine(secondDirectory, "b.fasta");
+                WriteFasta(firstDatabase, "P1", "MNNNKQQQK");
+                WriteFasta(secondDatabase, "P2", "MHHHKRRRK");
+
+                var proteinList = new List<Protein>
+                {
+                    new Protein("MNNNKQQQK", "P1"),
+                    new Protein("MHHHKRRRK", "P2")
+                };
+
+                var firstDb = new DbForTask(firstDatabase, false);
+                var secondDb = new DbForTask(secondDatabase, false);
+
+                // A concrete task is only needed to reach the public GenerateIndexes; no spectra are involved.
+                var task = new SearchTask();
+
+                List<PeptideWithSetModifications> peptideIndex = null;
+                List<int>[] fragmentIndex = null;
+                List<int>[] precursorIndex = null;
+
+                // First run: index is written beside the first database in the list.
+                task.GenerateIndexes(BuildEngineForDatabases(proteinList, firstDatabase, secondDatabase),
+                    new List<DbForTask> { firstDb, secondDb },
+                    ref peptideIndex, ref fragmentIndex, ref precursorIndex, proteinList, "test");
+
+                string firstIndexRoot = Path.Combine(firstDirectory, MetaMorpheusTask.IndexFolderName);
+                Assert.That(Directory.Exists(firstIndexRoot), Is.True, "the first run should have written an index");
+                Assert.That(Directory.GetDirectories(firstIndexRoot).Length, Is.EqualTo(1));
+
+                // Second run: same databases, reversed order, so the key is unchanged but the first database in
+                // the list has no index folder of its own.
+                peptideIndex = null;
+                fragmentIndex = null;
+                precursorIndex = null;
+
+                task.GenerateIndexes(BuildEngineForDatabases(proteinList, secondDatabase, firstDatabase),
+                    new List<DbForTask> { secondDb, firstDb },
+                    ref peptideIndex, ref fragmentIndex, ref precursorIndex, proteinList, "test");
+
+                Assert.That(Directory.Exists(Path.Combine(secondDirectory, MetaMorpheusTask.IndexFolderName)), Is.False,
+                    "reversing the database order must reuse the existing index rather than write a second one");
+                Assert.That(Directory.GetDirectories(firstIndexRoot).Length, Is.EqualTo(1),
+                    "no additional index folder should have been created");
+                Assert.That(peptideIndex, Is.Not.Null, "the reused index should have been read back");
+            }
+            finally
+            {
+                Directory.Delete(root, true);
+            }
+        }
+
+        #endregion
     }
 }
