@@ -12,6 +12,10 @@
     <ApplicationIdGuid>d14355b6-6334-4ce0-8819-2f71b24249f6</ApplicationIdGuid>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-windows10.0.19041.0'">
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
