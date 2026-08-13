@@ -520,73 +520,86 @@ namespace TaskLayer
                     psmsForQuantification.SetSilacFilteredPsms(silacPsms);
                 }
 
-                //group psms by file
-                var psmsGroupedByFile = psmsForQuantification.GroupBy(p => p.FullFilePath);
-
                 // some PSMs may not have protein groups (if 2 peptides are required to construct a protein group, some PSMs will be left over)
                 // the peptides should still be quantified but not considered for protein quantification
                 var undefinedPg = new ProteinGroup("UNDEFINED", "", "");
-                //sort the unambiguous psms by protease to make MBR compatible with multiple proteases
-                Dictionary<DigestionAgent, List<SpectralMatch>> proteaseSortedPsms = new Dictionary<DigestionAgent, List<SpectralMatch>>();
-                Dictionary<DigestionAgent, FlashLfqResults> proteaseSortedFlashLFQResults = new Dictionary<DigestionAgent, FlashLfqResults>();
-
-                foreach (IDigestionParams dp in Parameters.ListOfDigestionParams)
-                {
-                    if (!proteaseSortedPsms.ContainsKey(dp.DigestionAgent))
-                    {
-                        proteaseSortedPsms.Add(dp.DigestionAgent, new List<SpectralMatch>());
-                    }
-                }
                 foreach (var psm in psmsForQuantification)
                 {
                     if (!psmToProteinGroups.ContainsKey(psm))
                     {
                         psmToProteinGroups.Add(psm, new List<ProteinGroup> { undefinedPg });
                     }
-
-                    proteaseSortedPsms[psm.DigestionParams.DigestionAgent].Add(psm);
                 }
 
-                // pass PSM info to FlashLFQ
-                var flashLFQIdentifications = new List<Identification>();
-                foreach (var spectraFile in psmsGroupedByFile)
-                {
-                    var rawfileinfo = spectraFileInfo.First(p => p.FullFilePathWithExtension.Equals(spectraFile.Key));
+                // Match-between-runs and normalization both assume every file could contain the same peptides, which is
+                // false across digestion agents, so each agent gets its own engine and the results are merged afterwards.
+                var psmsByDigestionAgent = psmsForQuantification
+                    .GroupBy(psm => psm.DigestionParams.DigestionAgent)
+                    .ToList();
 
-                    foreach (var psm in spectraFile)
+                FlashLfqResults quantificationResults = null;
+
+                foreach (var agentPsms in psmsByDigestionAgent)
+                {
+                    // pass PSM info to FlashLFQ
+                    var flashLFQIdentifications = new List<Identification>();
+                    foreach (var spectraFile in agentPsms.GroupBy(p => p.FullFilePath))
                     {
-                        flashLFQIdentifications.Add(
-                            new Identification(
-                                fileInfo: rawfileinfo,
-                                psm.BaseSequence, 
-                                psm.FullSequence,
-                                psm.BioPolymerWithSetModsMonoisotopicMass.Value, 
-                                psm.ScanRetentionTime, 
-                                psm.ScanPrecursorCharge, 
-                                psmToProteinGroups[psm],
-                                psmScore: psm.Score,
-                                qValue: psmsForQuantification.FilterType == FilterType.QValue ? psm.FdrInfo.QValue : psm.FdrInfo.PEP_QValue,
-                                decoy: psm.IsDecoy));
+                        var rawfileinfo = spectraFileInfo.First(p => p.FullFilePathWithExtension.Equals(spectraFile.Key));
+
+                        foreach (var psm in spectraFile)
+                        {
+                            flashLFQIdentifications.Add(
+                                new Identification(
+                                    fileInfo: rawfileinfo,
+                                    psm.BaseSequence,
+                                    psm.FullSequence,
+                                    psm.BioPolymerWithSetModsMonoisotopicMass.Value,
+                                    psm.ScanRetentionTime,
+                                    psm.ScanPrecursorCharge,
+                                    psmToProteinGroups[psm],
+                                    psmScore: psm.Score,
+                                    qValue: psmsForQuantification.FilterType == FilterType.QValue ? psm.FdrInfo.QValue : psm.FdrInfo.PEP_QValue,
+                                    decoy: psm.IsDecoy));
+                        }
+                    }
+
+                    // run FlashLFQ
+                    var flashLfqEngine = new FlashLfqEngine(
+                        allIdentifications: flashLFQIdentifications,
+                        normalize: Parameters.SearchParameters.Normalize,
+                        ppmTolerance: Parameters.SearchParameters.QuantifyPpmTol,
+                        matchBetweenRunsPpmTolerance: Parameters.SearchParameters.QuantifyPpmTol,  // If these tolerances are not equivalent, then MBR will falsely classify peptides found in the initial search as MBR peaks
+                        matchBetweenRuns: Parameters.SearchParameters.MatchBetweenRuns,
+                        matchBetweenRunsFdrThreshold: Parameters.SearchParameters.MbrFdrThreshold,
+                        useSharedPeptidesForProteinQuant: Parameters.SearchParameters.UseSharedPeptidesForLFQ,
+                        peptideSequencesToQuantify: Parameters.SearchParameters.SilacLabels == null ? peptideSequencesForQuantification : null, // Silac is doing it's own thing, no need to pass in peptide sequences
+                        silent: true,
+                        maxThreads: CommonParameters.MaxThreadsToUsePerFile);
+
+                    if (!flashLFQIdentifications.Any())
+                    {
+                        continue;
+                    }
+
+                    var agentResults = flashLfqEngine.Run();
+
+                    if (quantificationResults == null)
+                    {
+                        quantificationResults = agentResults;
+                    }
+                    else
+                    {
+                        MergeQuantificationResults(quantificationResults, agentResults);
                     }
                 }
 
-                // run FlashLFQ
-                var flashLfqEngine = new FlashLfqEngine(
-                    allIdentifications: flashLFQIdentifications,
-                    normalize: Parameters.SearchParameters.Normalize,
-                    ppmTolerance: Parameters.SearchParameters.QuantifyPpmTol,
-                    matchBetweenRunsPpmTolerance: Parameters.SearchParameters.QuantifyPpmTol,  // If these tolerances are not equivalent, then MBR will falsely classify peptides found in the initial search as MBR peaks
-                    matchBetweenRuns: Parameters.SearchParameters.MatchBetweenRuns,
-                    matchBetweenRunsFdrThreshold: Parameters.SearchParameters.MbrFdrThreshold,
-                    useSharedPeptidesForProteinQuant: Parameters.SearchParameters.UseSharedPeptidesForLFQ,
-                    peptideSequencesToQuantify: Parameters.SearchParameters.SilacLabels == null ? peptideSequencesForQuantification : null, // Silac is doing it's own thing, no need to pass in peptide sequences
-                    silent: true,
-                    maxThreads: CommonParameters.MaxThreadsToUsePerFile);
-
-                if (flashLFQIdentifications.Any())
+                if (quantificationResults != null && psmsByDigestionAgent.Count > 1)
                 {
-                    Parameters.FlashLfqResults = flashLfqEngine.Run();
+                    RestoreSingleEngineFileOrder(quantificationResults);
                 }
+
+                Parameters.FlashLfqResults = quantificationResults;
 
                 // get protein intensity back from FlashLFQ
                 if (ProteinGroups != null && Parameters.FlashLfqResults != null)
@@ -621,6 +634,55 @@ namespace TaskLayer
             {
                 EngineCrashed("Quantification", e);
             }
+        }
+
+        /// <summary>
+        /// Folds one digestion agent's quantification results into another's. The two runs cover disjoint sets of
+        /// spectra files, because a file's digestion agent comes from its file-specific parameters.
+        /// FlashLfqResults.MergeResultsWith carries intensities and detection types but not retention times or
+        /// protein group membership, so those are copied here for peptides that both runs observed.
+        /// </summary>
+        private static void MergeQuantificationResults(FlashLfqResults mergeInto, FlashLfqResults mergeFrom)
+        {
+            var filesFromMergedRun = mergeFrom.SpectraFiles.ToList();
+
+            mergeInto.MergeResultsWith(mergeFrom);
+
+            foreach (var sequenceAndPeptide in mergeFrom.PeptideModifiedSequences)
+            {
+                if (!mergeInto.PeptideModifiedSequences.TryGetValue(sequenceAndPeptide.Key, out Peptide mergedPeptide)
+                    || ReferenceEquals(mergedPeptide, sequenceAndPeptide.Value))
+                {
+                    continue;
+                }
+
+                foreach (SpectraFileInfo file in filesFromMergedRun)
+                {
+                    mergedPeptide.SetRetentionTime(file, sequenceAndPeptide.Value.GetRetentionTime(file));
+                }
+
+                foreach (ProteinGroup proteinGroup in sequenceAndPeptide.Value.ProteinGroups)
+                {
+                    mergedPeptide.ProteinGroups.Add(proteinGroup);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Merging appends each run's files, so the spectra files end up grouped by digestion agent. Output column
+        /// order comes from this list, so it is put back into the order a single FlashLfqEngine would have produced.
+        /// </summary>
+        private static void RestoreSingleEngineFileOrder(FlashLfqResults results)
+        {
+            var orderedFiles = results.SpectraFiles
+                .OrderBy(p => p.Condition)
+                .ThenBy(p => p.BiologicalReplicate)
+                .ThenBy(p => p.Fraction)
+                .ThenBy(p => p.TechnicalReplicate)
+                .ToList();
+
+            results.SpectraFiles.Clear();
+            results.SpectraFiles.AddRange(orderedFiles);
         }
 
         private void HistogramAnalysis()
