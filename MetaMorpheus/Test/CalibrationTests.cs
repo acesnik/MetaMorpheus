@@ -18,7 +18,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
 using TaskLayer;
 using Transcriptomics;
 
@@ -834,6 +836,151 @@ namespace Test
             CalibrationTask.UpdateCombinedParameters(cp, results);
 
             Assert.That(cp.PrecursorMassTolerance.Value, Is.LessThanOrEqualTo(5.0));
+        }
+
+        /// <summary>
+        /// Issue #1955: an unindexed calibrated mzML is rejected by downstream consumers that require the
+        /// index. A null argument leaves WriteIndexedMzml alone, so the default is pinned as well as the flag.
+        /// The offsets are checked against the file's bytes rather than by reading through mzLib, whose
+        /// dynamic connection calls FindOrCreateIndex and silently builds an index when the file has none.
+        /// </summary>
+        [Test]
+        [TestCase(null, true)]
+        [TestCase(true, true)]
+        [TestCase(false, false)]
+        public static void CalibratedMzmlIsIndexedUnlessTheFlagIsCleared(bool? writeIndexedMzml, bool expectIndexed)
+        {
+            CalibrationTask calibrationTask = new CalibrationTask();
+            if (writeIndexedMzml.HasValue)
+            {
+                calibrationTask.CalibrationParameters.WriteIndexedMzml = writeIndexedMzml.Value;
+            }
+            else
+            {
+                Assert.That(calibrationTask.CalibrationParameters.WriteIndexedMzml, Is.True,
+                    "indexed mzML is expected to be the default");
+            }
+
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory,
+                "TestCalibrationIndexedMzml" + (writeIndexedMzml?.ToString() ?? "Default"));
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            Directory.CreateDirectory(outputFolder);
+
+            calibrationTask.RunTask(outputFolder, new List<DbForTask> { new DbForTask(myDatabase, false) },
+                new List<string> { myFile }, "test");
+
+            string calibratedFile = Path.Combine(outputFolder, "SmallCalibratible_Yeast-calib.mzML");
+            Assert.That(File.Exists(calibratedFile), "calibration did not write an mzML");
+
+            byte[] fileBytes = File.ReadAllBytes(calibratedFile);
+            string rootElementName;
+            using (XmlReader reader = XmlReader.Create(calibratedFile))
+            {
+                reader.MoveToContent();
+                rootElementName = reader.Name;
+            }
+
+            if (!expectIndexed)
+            {
+                Assert.That(rootElementName, Is.EqualTo("mzML"));
+                Assert.That(Encoding.UTF8.GetString(fileBytes), Does.Not.Contain("<indexList"));
+                CleanUpCalibrationOutput(outputFolder);
+                return;
+            }
+
+            Assert.That(rootElementName, Is.EqualTo("indexedmzML"));
+
+            long indexListOffset = -1;
+            int declaredSpectrumCount = -1;
+            string currentIndexName = null;
+            List<(string IdRef, long ByteOffset)> spectrumOffsets = new();
+            using (XmlReader reader = XmlReader.Create(calibratedFile))
+            {
+                while (reader.Read())
+                {
+                    if (!reader.IsStartElement())
+                    {
+                        continue;
+                    }
+
+                    switch (reader.Name)
+                    {
+                        case "spectrumList":
+                            declaredSpectrumCount = int.Parse(reader["count"]);
+                            break;
+
+                        case "index":
+                            currentIndexName = reader["name"];
+                            break;
+
+                        case "offset":
+                            string idRef = reader["idRef"];
+                            long byteOffset = long.Parse(reader.ReadElementContentAsString());
+                            if (currentIndexName == "spectrum")
+                            {
+                                spectrumOffsets.Add((idRef, byteOffset));
+                            }
+                            break;
+
+                        case "indexListOffset":
+                            indexListOffset = long.Parse(reader.ReadElementContentAsString());
+                            break;
+                    }
+                }
+            }
+
+            Assert.That(spectrumOffsets, Is.Not.Empty, "the spectrum index is missing or empty");
+            Assert.That(spectrumOffsets.Count, Is.EqualTo(declaredSpectrumCount),
+                "the index does not cover every spectrum in the file");
+            Assert.That(ElementStartsAt(fileBytes, indexListOffset, "<indexList"), Is.True,
+                "indexListOffset does not point at the indexList element");
+
+            foreach ((string idRef, long byteOffset) in spectrumOffsets)
+            {
+                Assert.That(ElementStartsAt(fileBytes, byteOffset, "<spectrum "), Is.True,
+                    $"index offset {byteOffset} for {idRef} does not point at a spectrum element");
+                Assert.That(IdAttributeAt(fileBytes, byteOffset), Is.EqualTo(idRef),
+                    $"index offset {byteOffset} points at a different spectrum than {idRef}");
+            }
+
+            CleanUpCalibrationOutput(outputFolder);
+        }
+
+        private static void CleanUpCalibrationOutput(string outputFolder)
+        {
+            Directory.Delete(outputFolder, true);
+            string taskSettings = Path.Combine(TestContext.CurrentContext.TestDirectory, "Task Settings");
+            if (Directory.Exists(taskSettings))
+            {
+                Directory.Delete(taskSettings, true);
+            }
+        }
+
+        private static bool ElementStartsAt(byte[] fileBytes, long byteOffset, string expected)
+        {
+            byte[] expectedBytes = Encoding.UTF8.GetBytes(expected);
+            if (byteOffset < 0 || byteOffset + expectedBytes.Length > fileBytes.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < expectedBytes.Length; i++)
+            {
+                if (fileBytes[byteOffset + i] != expectedBytes[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static string IdAttributeAt(byte[] fileBytes, long byteOffset)
+        {
+            int length = (int)Math.Min(1000, fileBytes.Length - byteOffset);
+            string element = Encoding.UTF8.GetString(fileBytes, (int)byteOffset, length);
+            return Regex.Match(element, "\\sid=\"([^\"]*)\"").Groups[1].Value;
         }
 
     }
