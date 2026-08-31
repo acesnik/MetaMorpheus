@@ -962,5 +962,54 @@ namespace Test
             // clean up
             Directory.Delete(folderPath, true);
         }
+
+        /// <summary>
+        /// Issue #2134: a sequence appeared in AllQuantifiedPeptides.tsv that was in no row of
+        /// AllPeptides.psmtsv. WriteContaminants gates the peptide file but not the quantified-peptide file.
+        /// </summary>
+        [Test]
+        public static void QuantifiedPeptidesHonourWriteContaminants()
+        {
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "QuantContaminantTest");
+            string spectra = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string fullDb = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
+            Directory.CreateDirectory(outputFolder);
+
+            // Split the fixture so the contaminant and target databases claim disjoint proteins. Passing
+            // an all-contaminant database instead leaves the quantified sequence list empty, and FlashLFQ
+            // reads an empty list as "no restriction".
+            var contaminantAccessions = new HashSet<string> { "P17255", "Q01855" };
+            var entries = File.ReadAllText(fullDb).Split('>', StringSplitOptions.RemoveEmptyEntries)
+                .Select(e => ">" + e).ToList();
+            string contaminantDb = Path.Combine(outputFolder, "contaminantSplit.fasta");
+            string targetDb = Path.Combine(outputFolder, "targetSplit.fasta");
+            File.WriteAllText(contaminantDb,
+                string.Concat(entries.Where(e => contaminantAccessions.Contains(e.Split('|')[1]))));
+            File.WriteAllText(targetDb,
+                string.Concat(entries.Where(e => !contaminantAccessions.Contains(e.Split('|')[1]))));
+
+            var searchTask = new SearchTask();
+            searchTask.SearchParameters.WriteContaminants = false;
+            searchTask.RunTask(outputFolder,
+                new List<DbForTask> { new DbForTask(targetDb, false), new DbForTask(contaminantDb, true) },
+                new List<string> { spectra }, "");
+
+            var peptideSequences = File.ReadAllLines(Path.Combine(outputFolder, "AllPeptides.psmtsv"))
+                .Skip(1)
+                .Select(line => line.Split('\t')[14])
+                .ToHashSet();
+            var quantifiedSequences = File.ReadAllLines(Path.Combine(outputFolder, "AllQuantifiedPeptides.tsv"))
+                .Skip(1)
+                .Select(line => line.Split('\t')[0])
+                .ToList();
+
+            Assert.That(quantifiedSequences, Is.Not.Empty);
+            Assert.That(quantifiedSequences.Where(s => !peptideSequences.Contains(s)), Is.Empty,
+                "quantified sequences absent from AllPeptides.psmtsv");
+            Assert.That(quantifiedSequences, Has.No.Member("AFISYHDEAQK"));   // P17255, contaminant only
+            Assert.That(quantifiedSequences, Has.No.Member("LAAPENEKPAPVR")); // Q01855, contaminant only
+
+            Directory.Delete(outputFolder, true);
+        }
     }
 }

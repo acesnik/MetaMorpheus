@@ -339,11 +339,12 @@ namespace TaskLayer
                     Warn($"{psmsWithoutMass} PSM(s) were excluded from quantification because their monoisotopic mass could not be determined.");
                 }
 
-                // Only these peptides will be written to the AllQuantifiedPeptides.tsv output file
+                // Only these peptides will be written to the AllQuantifiedPeptides.tsv output file, so this
+                // filter must match the one WritePeptideResults uses or the two files disagree on their rows.
                 var peptideSequencesForQuantification = FilteredPsms.Filter(Parameters.AllSpectralMatches,
                     CommonParameters,
                     includeDecoys: false,
-                    includeContaminants: true,
+                    includeContaminants: Parameters.SearchParameters.WriteContaminants,
                     includeAmbiguous: false,
                     includeAmbiguousMods: false,
                     includeHighQValuePsms: false,
