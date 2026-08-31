@@ -92,7 +92,14 @@ namespace MetaMorpheusCommandLine
             if (settings.Verbosity == CommandLineSettings.VerbosityType.minimal || settings.Verbosity == CommandLineSettings.VerbosityType.normal)
             {
                 Console.WriteLine(GlobalVariables.MetaMorpheusVersion);
+
+                // the loop over the databases below only reports mods annotated in .xml databases
+                foreach (var error in GlobalVariables.ErrorsReadingMods)
+                {
+                    Console.WriteLine(error);
+                }
             }
+            GlobalVariables.ErrorsReadingMods.Clear();
 
             try
             {

@@ -400,6 +400,33 @@ namespace EngineLayer
             }
         }
 
+        /// <summary>
+        /// Reads modifications from a user-editable mod file, routing both malformed entries and an
+        /// unreadable file into <see cref="ErrorsReadingMods"/> instead of throwing.
+        /// </summary>
+        private static IEnumerable<Modification> ReadModsFromFileReportingErrors(string modFile)
+        {
+            List<Modification> mods;
+            List<(Modification Mod, string Warning)> filteredMods;
+            try
+            {
+                mods = ModificationLoader.ReadModsFromFile(modFile, out filteredMods).ToList();
+            }
+            catch (Exception e)
+            {
+                ErrorsReadingMods.Add("No modifications could be read from " + Path.GetFileName(modFile) + ": " + e.Message);
+                return new List<Modification>();
+            }
+
+            foreach (var filtered in filteredMods)
+            {
+                ErrorsReadingMods.Add("The following modification in " + Path.GetFileName(modFile) +
+                    " was not read in:" + Environment.NewLine + filtered.Warning);
+            }
+
+            return mods;
+        }
+
         private static void LoadModifications()
         {
             _AllModsKnown = new List<Modification>();
@@ -421,7 +448,7 @@ namespace EngineLayer
                 }
                 if (modFile.Contains("Rna"))
                     continue;
-                AddMods(ModificationLoader.ReadModsFromFile(modFile, out var errorMods), false);
+                AddMods(ReadModsFromFileReportingErrors(modFile), false);
             }
 
             AddMods(UniprotDeseralized.OfType<Modification>(), false);
@@ -458,7 +485,7 @@ namespace EngineLayer
             var customModsPath = Path.Combine(DataDir, @"Mods", "RnaCustomModifications.txt");
             if (File.Exists(customModsPath))
             {
-                AddMods(ModificationLoader.ReadModsFromFile(customModsPath, out var errorMods), false, true);
+                AddMods(ReadModsFromFileReportingErrors(customModsPath), false, true);
             }
 
             // populate mod types and dictionary
