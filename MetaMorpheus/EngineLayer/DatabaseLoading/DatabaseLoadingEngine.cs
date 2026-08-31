@@ -92,12 +92,12 @@ public class DatabaseLoadingEngine(
             int decoyCount = 0;
             if (GlobalVariables.AnalyteType == AnalyteType.Oligo)
             {
-                dbBioPolymers = LoadOligoDb(db.FilePath, searchTarget, decoyType, localizeableModificationTypes, db.IsContaminant, out Dictionary<string, Modification> unknownModifications, out int emptyOligoEntriesForThisDb, commonParameters, db.DecoyIdentifier);
+                dbBioPolymers = LoadOligoDb(db.FilePath, searchTarget, decoyType, localizeableModificationTypes, db.IsContaminant, out Dictionary<string, Modification> unknownModifications, out int emptyOligoEntriesForThisDb, commonParameters, db.DecoyIdentifier, errors);
                 emptyEntries += emptyOligoEntriesForThisDb;
             }
             else
             {
-                dbBioPolymers = LoadProteinDb(db.FilePath, searchTarget, decoyType, localizeableModificationTypes, db.IsContaminant, out Dictionary<string, Modification> unknownModifications, out int emptyProteinEntriesForThisDb, commonParameters, db.DecoyIdentifier);
+                dbBioPolymers = LoadProteinDb(db.FilePath, searchTarget, decoyType, localizeableModificationTypes, db.IsContaminant, out Dictionary<string, Modification> unknownModifications, out int emptyProteinEntriesForThisDb, commonParameters, db.DecoyIdentifier, errors);
                 emptyEntries += emptyProteinEntriesForThisDb;
             }
 
@@ -129,7 +129,7 @@ public class DatabaseLoadingEngine(
     public static IEnumerable<RNA> LoadOligoDb(string fileName, bool generateTargets, DecoyType decoyType,
         List<string> localizeableModificationTypes, bool isContaminant,
         out Dictionary<string, Modification> unknownMods, out int emptyEntriesCount,
-        CommonParameters commonParameters, string? decoyIdentifier = null)
+        CommonParameters commonParameters, string? decoyIdentifier = null, List<string>? errors = null)
     {
         decoyIdentifier ??= GlobalVariables.DecoyIdentifier;
         List<RNA> rnaList;
@@ -142,6 +142,7 @@ public class DatabaseLoadingEngine(
         {
             unknownMods = null;
             rnaList = RnaDbLoader.LoadRnaFasta(fileName, generateTargets, decoyType, isContaminant, out var dbErrors);
+            errors?.AddRange(dbErrors);
         }
         else
         {
@@ -156,7 +157,7 @@ public class DatabaseLoadingEngine(
     }
 
     public static IEnumerable<Protein> LoadProteinDb(string fileName, bool generateTargets, DecoyType decoyType, List<string> localizeableModificationTypes, bool isContaminant, out Dictionary<string, Modification> um,
-            out int emptyEntriesCount, CommonParameters commonParameters, string? decoyIdentifier = null)
+            out int emptyEntriesCount, CommonParameters commonParameters, string? decoyIdentifier = null, List<string>? errors = null)
     {
         decoyIdentifier ??= GlobalVariables.DecoyIdentifier;
         List<Protein> proteinList;
@@ -171,6 +172,7 @@ public class DatabaseLoadingEngine(
             proteinList = ProteinDbLoader.LoadProteinFasta(fileName, generateTargets, decoyType, isContaminant, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                 ProteinDbLoader.UniprotOrganismRegex, commonParameters.MaxThreadsToUsePerFile, addTruncations: commonParameters.AddTruncations);
+            errors?.AddRange(dbErrors);
         }
         else
         {
