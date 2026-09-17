@@ -30,6 +30,8 @@ namespace Test
             commonParameters = new CommonParameters(
                 taskDescriptor: "AveragingTask",
                 dissociationType: DissociationType.LowCID,
+                trimMs1Peaks: false,
+                trimMsMsPeaks: false,
                 maxThreadsToUsePerFile: 2);
         }
 

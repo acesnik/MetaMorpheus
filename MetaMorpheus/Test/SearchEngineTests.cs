@@ -232,10 +232,10 @@ namespace Test
                 dissociationType: DissociationType.LowCID,
                 maxThreadsToUsePerFile: 1,
                 precursorMassTolerance: new PpmTolerance(5),
-                numberOfPeaksToKeepPerWindow: 200, // this is set to a value, but since the dissociation type is set to LowCID, no peak filtering should actually happen
-                minimumAllowedIntensityRatioToBasePeak: 0.01, // this is set to a value, but since the dissociation type is set to LowCID, no peak filtering should actually happen
+                numberOfPeaksToKeepPerWindow: 200, // set, but LowCID spares the MS2 scans this test inspects
+                minimumAllowedIntensityRatioToBasePeak: 0.01, // set, but LowCID spares the MS2 scans this test inspects
                 trimMs1Peaks: false,
-                trimMsMsPeaks: true, // this is set to true, but since the dissociation type is set to LowCID, no peak filtering should actually happen
+                trimMsMsPeaks: true, // set, but LowCID spares the MS2 scans this test inspects
                 digestionParams: new DigestionParams(
                     protease: "trypsin",
                     minPeptideLength: 1,
@@ -289,6 +289,114 @@ namespace Test
 
                 Assert.That(mz, Is.EqualTo(expectedMz).Within(0.001));
                 Assert.That(intensity, Is.EqualTo(expectedIntensity).Within(0.001));
+            }
+        }
+
+        /// <summary>
+        /// Issue #1602: a low-resolution MS3 child scan type used to disable peak filtering for every
+        /// scan in the file, including the high-resolution MS2 scans. MS3 scans are identifiable by MS
+        /// level when the file is loaded, so only they should be spared.
+        /// </summary>
+        [Test]
+        public static void TestMixedModeFilteringSparesOnlyLowResMsLevels()
+        {
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\10226.mzML");
+
+            CommonParameters Parameters(DissociationType ms3ChildType, bool trimMsMsPeaks, bool trimMs1Peaks = false,
+                DissociationType parentType = DissociationType.CID) => new CommonParameters(
+                dissociationType: parentType,
+                ms3childScanDissociationType: ms3ChildType,
+                numberOfPeaksToKeepPerWindow: 200,
+                minimumAllowedIntensityRatioToBasePeak: 0.01,
+                trimMs1Peaks: trimMs1Peaks,
+                trimMsMsPeaks: trimMsMsPeaks,
+                maxThreadsToUsePerFile: 1);
+
+            int[] PeakCounts(MsDataFile file, int msnOrder) => file.GetAllScansList()
+                .Where(scan => scan.MsnOrder == msnOrder)
+                .OrderBy(scan => scan.OneBasedScanNumber)
+                .Select(scan => scan.MassSpectrum.XArray.Length)
+                .ToArray();
+
+            // MyFileManager caches loaded files by path alone, so each arm needs its own manager
+            MsDataFile lowResMs3 = new MyFileManager(true).LoadFile(spectraFile, Parameters(DissociationType.LowCID, true));
+            MsDataFile allHighRes = new MyFileManager(true).LoadFile(spectraFile, Parameters(DissociationType.HCD, true));
+            MsDataFile untrimmed = new MyFileManager(true).LoadFile(spectraFile, Parameters(DissociationType.HCD, false));
+
+            // the fixture is only informative if its MSn scans exceed the peak budget to begin with
+            Assert.That(PeakCounts(untrimmed, 2), Has.Length.EqualTo(2));
+            Assert.That(PeakCounts(untrimmed, 3), Has.Length.EqualTo(4));
+            Assert.That(PeakCounts(untrimmed, 2), Has.All.GreaterThan(200));
+            Assert.That(PeakCounts(untrimmed, 3), Has.All.GreaterThan(200));
+
+            // a low-res MS3 child no longer suppresses MS2 trimming; MS2 is trimmed exactly as it is
+            // when no low-res scan type is configured. Before the fix these equalled the untrimmed counts.
+            Assert.That(PeakCounts(lowResMs3, 2), Is.EqualTo(PeakCounts(allHighRes, 2)));
+            Assert.That(PeakCounts(lowResMs3, 2), Has.All.LessThanOrEqualTo(200));
+            Assert.That(PeakCounts(lowResMs3, 2), Is.Not.EqualTo(PeakCounts(untrimmed, 2)));
+
+            // the low-res MS3 scans are still spared, and are trimmed when declared high-res instead
+            Assert.That(PeakCounts(lowResMs3, 3), Is.EqualTo(PeakCounts(untrimmed, 3)));
+            Assert.That(PeakCounts(allHighRes, 3), Has.All.LessThanOrEqualTo(200));
+
+            // MS1 scans are never low-res here, so TrimMs1Peaks is honoured rather than being disabled
+            // as collateral damage. Before the fix this arm left MS1 untrimmed too.
+            MsDataFile lowResMs3TrimmingMs1 = new MyFileManager(true)
+                .LoadFile(spectraFile, Parameters(DissociationType.LowCID, true, trimMs1Peaks: true));
+            Assert.That(PeakCounts(untrimmed, 1), Has.All.GreaterThan(200));
+            Assert.That(PeakCounts(lowResMs3TrimmingMs1, 1), Has.All.LessThanOrEqualTo(200));
+
+            // With a high-res parent and an undeclared MS3 child type, MS2 is trimmed but the MS3 scans
+            // are not, because their resolution is unknown. This is the branch that changed for
+            // ordinary high-res configs: the old 7-argument call left applyTrimmingToMsN at its default
+            // of true and trimmed them regardless of TrimMsMsPeaks.
+            MsDataFile undeclaredMs3 = new MyFileManager(true)
+                .LoadFile(spectraFile, Parameters(DissociationType.Unknown, true));
+            Assert.That(PeakCounts(undeclaredMs3, 2), Is.EqualTo(PeakCounts(allHighRes, 2)));
+            Assert.That(PeakCounts(undeclaredMs3, 3), Is.EqualTo(PeakCounts(untrimmed, 3)));
+
+            // An undeclared MS3 child type means the MS3 resolution is unknown, so those scans are not
+            // trimmed. This is the shape of TMT11_LowCID_SearchTask.toml, whose MS3 scans carry the
+            // reporter ions that multiplex quantification reads, so it must stay fully untrimmed.
+            MsDataFile multiplexShaped = new MyFileManager(true).LoadFile(spectraFile,
+                Parameters(DissociationType.Unknown, true, parentType: DissociationType.LowCID));
+            Assert.That(PeakCounts(multiplexShaped, 1), Is.EqualTo(PeakCounts(untrimmed, 1)));
+            Assert.That(PeakCounts(multiplexShaped, 2), Is.EqualTo(PeakCounts(untrimmed, 2)));
+            Assert.That(PeakCounts(multiplexShaped, 3), Is.EqualTo(PeakCounts(untrimmed, 3)));
+        }
+
+        /// <summary>
+        /// Issue #1602: when filtering has to be skipped because a scan's resolution is not known, say
+        /// so rather than silently ignoring the configured trimming settings.
+        /// </summary>
+        [Test]
+        public static void TestMixedModeFilteringWarnsWhenItSkipsAnMsLevel()
+        {
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\10226.mzML");
+            List<string> warnings = new List<string>();
+            EventHandler<StringEventArgs> handler = (o, e) => warnings.Add(e.S);
+            MyFileManager.WarnHandler += handler;
+
+            try
+            {
+                // a LowCID parent spares MS2, and this file has MS3 scans with no declared child type
+                new MyFileManager(true).LoadFile(spectraFile, new CommonParameters(
+                    dissociationType: DissociationType.LowCID, trimMsMsPeaks: true, maxThreadsToUsePerFile: 1));
+                Assert.That(warnings.Any(w => w.Contains("MS2 peak filtering was skipped")), Is.True,
+                    string.Join(" | ", warnings));
+                Assert.That(warnings.Any(w => w.Contains("MS3 peak filtering was skipped")), Is.True,
+                    string.Join(" | ", warnings));
+
+                // nothing to report when every MSn level is filtered as configured
+                warnings.Clear();
+                new MyFileManager(true).LoadFile(spectraFile, new CommonParameters(
+                    dissociationType: DissociationType.CID, ms3childScanDissociationType: DissociationType.HCD,
+                    trimMsMsPeaks: true, maxThreadsToUsePerFile: 1));
+                Assert.That(warnings, Is.Empty);
+            }
+            finally
+            {
+                MyFileManager.WarnHandler -= handler;
             }
         }
 

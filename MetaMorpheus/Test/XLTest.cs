@@ -1612,8 +1612,10 @@ namespace Test
             {
                 csm.BetaPeptide.ResolveAllAmbiguities();
             }
-            // test parent scan (CID)
-            Assert.That(csm.MatchedFragmentIons.Count, Is.EqualTo(36));
+            // test parent scan (CID). 29 rather than 36 because this scan is now peak-filtered: these
+            // parameters leave trimMsMsPeaks at its default, and a low-res MS3 child no longer
+            // suppresses MS2 trimming (scan 2 keeps 181 of 990 peaks).
+            Assert.That(csm.MatchedFragmentIons.Count, Is.EqualTo(29));
             Assert.That(csm.ScanNumber == 2);
 
             // test child scan (low-resolution CID, alpha peptide signature ion)

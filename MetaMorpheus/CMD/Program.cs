@@ -166,6 +166,7 @@ namespace MetaMorpheusCommandLine
             MetaMorpheusEngine.FinishedSingleEngineHandler += MyEngine_finishedSingleEngineHandler;
 
             MetaMorpheusTask.WarnHandler += WarnHandler;
+            MyFileManager.WarnHandler += WarnHandler;
             MetaMorpheusTask.LogHandler += LogHandler;
             MetaMorpheusTask.StartingSingleTaskHander += MyTaskEngine_startingSingleTaskHander;
             MetaMorpheusTask.FinishedSingleTaskHandler += MyTaskEngine_finishedSingleTaskHandler;

@@ -57,10 +57,12 @@ namespace MetaMorpheusGUI
 
         private void SaveButton_OnClick(object sender, RoutedEventArgs e)
         {
-            // setting dissociation type ensures no filters occur when loading files in MM Task
+            // averaging consumes raw spectra, so opt out of peak filtering explicitly
             CommonParameters commParamsToSave = new CommonParameters(
                 taskDescriptor: OutputFileNameTextBox.Text != "" ? OutputFileNameTextBox.Text : "AveragingTask", 
                 dissociationType: DissociationType.LowCID,
+                trimMs1Peaks: false,
+                trimMsMsPeaks: false,
                 maxThreadsToUsePerFile: TheTask.Parameters.MaxThreadsToUsePerFile);
 
             TheTask.CommonParameters = commParamsToSave;
