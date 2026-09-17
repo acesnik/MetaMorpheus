@@ -12,7 +12,8 @@
             <StackPanel Orientation="Horizontal" Margin="5 2 0 2">
                 <Label Content="Header format:" Width="120" />
                 <ComboBox x:Name="FastaHeaderFormatComboBox" Width="130" HorizontalAlignment="Left"
-                          SelectionChanged="FastaHeaderFormatComboBox_SelectionChanged"
+                          ItemsSource="{Binding AvailableFormats}"
+                          SelectedItem="{Binding HeaderFormat, Mode=TwoWay}"
                           ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <ComboBox.ToolTip>
                         <TextBlock>
@@ -26,11 +27,14 @@
                             changes Name to the short form (ADH1_YEAST rather than the description) and
                             fills in the NCBI taxonomy id, so its output differs from UniProt.
                             <LineBreak />
-                            Applies to .fasta databases only; a UniProt XML carries its own fields.
+                            Applies to protein .fasta databases only. A UniProt XML carries its own
+                            fields, and a nucleic acid database ignores this setting entirely -- the
+                            library always detects the header format on the oligo path.
                         </TextBlock>
                     </ComboBox.ToolTip>
                 </ComboBox>
-                <TextBlock x:Name="PresetSummaryTextBlock" Margin="15 4 0 0" Foreground="Gray"
+                <TextBlock x:Name="PresetSummaryTextBlock" Text="{Binding PresetSummary}"
+                           Margin="15 4 0 0" Foreground="Gray"
                            FontStyle="Italic" FontSize="10" TextWrapping="Wrap" MaxWidth="380" />
             </StackPanel>
 
@@ -40,7 +44,7 @@
                 warning before the run starts, not as a crash.
             </TextBlock>
 
-            <Grid x:Name="CustomRegexGrid" Margin="5 2 5 2" IsEnabled="False">
+            <Grid x:Name="CustomRegexGrid" Margin="5 2 5 2" IsEnabled="{Binding IsCustom}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -56,13 +60,14 @@
 
                 <Label Grid.Row="0" Grid.Column="0" Content="Accession:" Width="120" />
                 <TextBox Grid.Row="0" Grid.Column="1" x:Name="CustomAccessionRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomAccessionRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>
                             The identifier MetaMorpheus joins every output file on. Required.
                             <LineBreak />
-                            Example, taking the RefSeq accession out of &gt;gi|16128008|ref|NP_414555.1| :
-                            &gt;.*\|(.*)\|
+                            Example, taking the RefSeq accession out of a defline with or without the
+                            retired gi| prefix: &gt;(?:.*\|)?([^\s|]+)\|?(?:\s|$)
                             <LineBreak />
                             An accession containing a | breaks the multi-value columns in .psmtsv, so
                             capture a field rather than a span of fields.
@@ -72,6 +77,7 @@
 
                 <Label Grid.Row="1" Grid.Column="0" Content="Full name:" Width="120" />
                 <TextBox Grid.Row="1" Grid.Column="1" x:Name="CustomFullNameRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomFullNameRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>The descriptive name, written as the protein full name.</TextBlock>
@@ -80,6 +86,7 @@
 
                 <Label Grid.Row="2" Grid.Column="0" Content="Name:" Width="120" />
                 <TextBox Grid.Row="2" Grid.Column="1" x:Name="CustomNameRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomNameRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>The short entry name, e.g. AATM_RABIT in a UniProt defline.</TextBlock>
@@ -88,6 +95,7 @@
 
                 <Label Grid.Row="3" Grid.Column="0" Content="Gene name:" Width="120" />
                 <TextBox Grid.Row="3" Grid.Column="1" x:Name="CustomGeneNameRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomGeneNameRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>The gene, written to the Gene Name column.</TextBlock>
@@ -96,6 +104,7 @@
 
                 <Label Grid.Row="4" Grid.Column="0" Content="Organism:" Width="120" />
                 <TextBox Grid.Row="4" Grid.Column="1" x:Name="CustomOrganismRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomOrganismRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>The species, written to the Organism column.</TextBlock>
@@ -104,6 +113,7 @@
 
                 <Label Grid.Row="5" Grid.Column="0" Content="Organism ID:" Width="120" />
                 <TextBox Grid.Row="5" Grid.Column="1" x:Name="CustomOrganismIdRegexTextBox" Margin="0 2 0 2"
+                         Text="{Binding CustomOrganismIdRegex, UpdateSourceTrigger=PropertyChanged}"
                          ToolTipService.ShowDuration="999999" ToolTipService.InitialShowDelay="500">
                     <TextBox.ToolTip>
                         <TextBlock>The NCBI taxonomy id, e.g. the 9986 in OX=9986.</TextBlock>

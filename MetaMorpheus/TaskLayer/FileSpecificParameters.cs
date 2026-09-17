@@ -78,6 +78,16 @@ namespace TaskLayer
                     case nameof(ProductDeconvolutionParameters):
                         ProductDeconvolutionParameters = keyValuePair.Value.Get<DeconvolutionParameters>(); break;
 
+                    // Databases are loaded once for the task, before any spectra file is considered,
+                    // so "parse sample1.mzML's FASTA headers differently from sample2.mzML's" is not a
+                    // statement that can be honoured. The default arm below already rejects it; this
+                    // arm exists to say why rather than just "unrecognized".
+                    case nameof(CommonParameters.FastaHeaderParsing):
+                        throw new MetaMorpheusException("The FASTA header format cannot be set per spectra file. "
+                            + "Databases are loaded once per task, so \"" + keyValuePair.Key
+                            + "\" belongs in the task toml under [CommonParameters.FastaHeaderParsing], not in a "
+                            + "file-specific parameters toml.");
+
                     default:
                         throw new MetaMorpheusException("Unrecognized parameter \"" + keyValuePair.Key + "\" in file-specific parameters toml");
                 }

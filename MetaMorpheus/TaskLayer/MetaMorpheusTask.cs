@@ -51,9 +51,16 @@ namespace TaskLayer
         /// Nett hands a bare ArgumentException to the caller on an unrecognized enum name, which does
         /// not say what the legal values are.
         /// </summary>
+        /// <remarks>
+        /// Enum.IsDefined as well as TryParse: TryParse accepts any numeric string, so "7" would parse
+        /// to (FastaHeaderFormat)7 and skip this message entirely, only to throw much later from
+        /// GetFieldRegexes with the unhelpful text this method exists to replace. Tomls get hand-edited
+        /// and copied between versions, and a member reordered later would silently retarget an old
+        /// number at a different format.
+        /// </remarks>
         private static FastaHeaderFormat ParseFastaHeaderFormat(string value)
         {
-            if (Enum.TryParse<FastaHeaderFormat>(value, true, out var parsed))
+            if (Enum.TryParse<FastaHeaderFormat>(value, true, out var parsed) && Enum.IsDefined(parsed))
                 return parsed;
 
             throw new MetaMorpheusException(

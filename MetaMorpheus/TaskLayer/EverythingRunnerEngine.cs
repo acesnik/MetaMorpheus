@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using EngineLayer.DatabaseLoading;
@@ -63,6 +64,23 @@ namespace TaskLayer
 
             StringBuilder allResultsText = new StringBuilder();
 
+            // Pure-configuration checks for every task, before task 1 runs. Whether a custom header
+            // regex compiles and has a capture group cannot depend on what an earlier task produced, so
+            // reporting it here turns "three hours into a Calibrate-GPTMD-Search chain, wrong regex"
+            // into "did not start, wrong regex". The header-dependent half has to stay in the loop,
+            // because CurrentXmlDbFilenameList is reassigned from each task's NewDatabases.
+            foreach ((string taskName, MetaMorpheusTask task) in TaskList)
+            {
+                if (task.CommonParameters?.FastaHeaderParsing is { } parsingConfig
+                    && !parsingConfig.ValidateConfiguration(out var configErrors))
+                {
+                    foreach (string configError in configErrors)
+                        Warn($"Cannot proceed. {taskName}: {configError}");
+                    FinishedAllTasks(OutputFolder);
+                    return;
+                }
+            }
+
             for (int i = 0; i < TaskList.Count; i++)
             {
                 if (!CurrentRawDataFilenameList.Any())
@@ -105,16 +123,38 @@ namespace TaskLayer
                     return;
                 }
 
-                // A malformed user-supplied header regex is a configuration mistake, not a crash.
-                // Real deflines are passed in because mzLib compiles the pattern without a match
-                // timeout, so only the user's own headers can show it is fast enough on them.
-                if (ok.Item2.CommonParameters?.FastaHeaderParsing is { } headerParsing
-                    && !headerParsing.Validate(out var headerRegexErrors, SampleFastaHeaders(CurrentXmlDbFilenameList)))
+                // The header-dependent half of the check. Real deflines are passed in for two
+                // reasons: mzLib compiles the pattern without a match timeout, so only the user's own
+                // headers can show it is fast enough on them; and an accession regex that matches none
+                // of them is not an empty field but a silently rekeyed output, because mzLib falls back
+                // to using the whole defline as the accession.
+                if (ok.Item2.CommonParameters?.FastaHeaderParsing is { } headerParsing)
                 {
-                    foreach (string headerRegexError in headerRegexErrors)
-                        Warn($"Cannot proceed. {ok.Item1}: {headerRegexError}");
-                    FinishedAllTasks(OutputFolder);
-                    return;
+                    var sample = SampleFastaHeaders(CurrentXmlDbFilenameList);
+
+                    // The oligo loader takes no regexes at all -- RnaDbLoader.LoadRnaFasta always
+                    // auto-detects -- so this setting cannot reach an RNA database. Say so rather than
+                    // letting it look as though it applied.
+                    if (GlobalVariables.AnalyteType == AnalyteType.Oligo
+                        && headerParsing.HeaderFormat != FastaHeaderFormat.UniProt
+                        && sample.Headers.Count > 0)
+                    {
+                        Warn($"{ok.Item1}: the FASTA header format setting ({headerParsing.HeaderFormat}) "
+                             + "does not apply to nucleic acid databases. mzLib always detects the header "
+                             + "format on the oligo path, and ignores these regexes.");
+                    }
+
+                    if (!headerParsing.Validate(out var headerRegexErrors, out var headerRegexWarnings,
+                            sample.Headers, sample.UnreadableFastaPaths))
+                    {
+                        foreach (string headerRegexError in headerRegexErrors)
+                            Warn($"Cannot proceed. {ok.Item1}: {headerRegexError}");
+                        FinishedAllTasks(OutputFolder);
+                        return;
+                    }
+
+                    foreach (string headerRegexWarning in headerRegexWarnings)
+                        Warn($"{ok.Item1}: {headerRegexWarning}");
                 }
 
                 // reset product types for custom fragmentation
@@ -173,41 +213,88 @@ namespace TaskLayer
         }
 
         /// <summary>
-        /// The first few deflines of each FASTA in the run, for validating a user-supplied regex
-        /// against the headers it will actually meet. Unreadable files are skipped: this is
-        /// validation input, and the loader reports a bad path itself.
+        /// The first few deflines of each FASTA in the run, and the FASTA databases none could be read
+        /// from. A path that yields nothing is reported rather than dropped, because an unchecked
+        /// database and a clean one must not produce the same verdict.
         /// </summary>
-        private static List<string> SampleFastaHeaders(List<DbForTask> databases, int perFile = 5)
+        /// <remarks>
+        /// Only FASTA is sampled. An .xml database is skipped and is not "unreadable": LoadProteinDb
+        /// consults the header regexes on the .fasta/.fa branch only, so the setting has no effect on
+        /// XML at all -- which is what a task downstream of GPTMD receives.
+        /// </remarks>
+        private static FastaHeaderSample SampleFastaHeaders(List<DbForTask> databases, int perFile = 5)
         {
-            var headers = new List<string>();
+            var sample = new FastaHeaderSample();
+
             foreach (var db in databases ?? new List<DbForTask>())
             {
                 if (db.IsSpectralLibrary)
                     continue;
 
+                // Strip .gz the way LoadProteinDb does. Reading Path.GetExtension straight off
+                // "uniprot_sprot.fasta.gz" yields ".gz", which used to drop every compressed database
+                // from the sample -- and compressed is how UniProt and NCBI ship.
                 string extension = Path.GetExtension(db.FilePath).ToLowerInvariant();
+                bool compressed = extension.EndsWith("gz");
+                if (compressed)
+                    extension = Path.GetExtension(Path.GetFileNameWithoutExtension(db.FilePath)).ToLowerInvariant();
+
                 if (extension != ".fasta" && extension != ".fa")
                     continue;
 
+                int taken = 0;
                 try
                 {
-                    int taken = 0;
-                    foreach (string line in File.ReadLines(db.FilePath))
+                    foreach (string line in ReadLines(db.FilePath, compressed))
                     {
                         if (!line.StartsWith('>'))
                             continue;
-                        headers.Add(line);
+                        sample.Headers.Add(line);
                         if (++taken == perFile)
                             break;
                     }
                 }
                 catch (Exception)
                 {
-                    // Not this gate's job to report.
+                    // Not this gate's job to report a bad path; the loader does that. But a database we
+                    // could not look at is recorded, so Auto does not pass by having seen nothing.
                 }
+
+                if (taken == 0)
+                    sample.UnreadableFastaPaths.Add(db.FilePath);
             }
 
-            return headers;
+            return sample;
+        }
+
+        /// <summary>
+        /// Streams the first lines of a FASTA, decompressing on the fly when gzipped. mzLib expands the
+        /// whole database to a sibling file to read it; sampling only needs the first few deflines.
+        /// </summary>
+        private static IEnumerable<string> ReadLines(string path, bool compressed)
+        {
+            if (!compressed)
+            {
+                foreach (string line in File.ReadLines(path))
+                    yield return line;
+                yield break;
+            }
+
+            using var file = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            using var gzip = new GZipStream(file, CompressionMode.Decompress);
+            using var reader = new StreamReader(gzip);
+            while (reader.ReadLine() is { } line)
+                yield return line;
+        }
+
+        /// <summary>
+        /// What <see cref="SampleFastaHeaders"/> found: real deflines, and the FASTA databases it could
+        /// not get any from.
+        /// </summary>
+        private sealed class FastaHeaderSample
+        {
+            public List<string> Headers { get; } = new();
+            public List<string> UnreadableFastaPaths { get; } = new();
         }
 
         private void Warn(string v)
