@@ -7,6 +7,10 @@ namespace EngineLayer
     public class ProteinScoringAndFdrResults : MetaMorpheusEngineResults
     {
         public List<ProteinGroup> SortedAndScoredProteinGroups;
+        /// <summary>
+        /// The protein q-value threshold the count below was taken at.
+        /// </summary>
+        public double FilterThreshold { get; internal set; } = 0.01;
 
         public ProteinScoringAndFdrResults(ProteinScoringAndFdrEngine proteinAnalysisEngine) : base(proteinAnalysisEngine)
         {
@@ -16,7 +20,7 @@ namespace EngineLayer
         {
             var sb = new StringBuilder();
             sb.AppendLine(base.ToString());
-            sb.Append("Number of proteins within 1% FDR: " + SortedAndScoredProteinGroups.Count(b => b.QValue < 0.01));
+            sb.Append($"Number of proteins within {FdrPercent(FilterThreshold)}% FDR: " + SortedAndScoredProteinGroups.Count(b => b.QValue < FilterThreshold));
             return sb.ToString();
         }
     }

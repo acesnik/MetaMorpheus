@@ -610,6 +610,7 @@ namespace TaskLayer
                 totalPartitions: commonParams.TotalPartitions,
                 qValueThreshold: commonParams.QValueThreshold,
                 pepQValueThreshold: commonParams.PepQValueThreshold,
+                qValueCutoffForPepCalculation: commonParams.QValueCutoffForPepCalculation,
                 scoreCutoff: commonParams.ScoreCutoff,
                 numberOfPeaksToKeepPerWindow: commonParams.NumberOfPeaksToKeepPerWindow,
                 minimumAllowedIntensityRatioToBasePeak: commonParams.MinimumAllowedIntensityRatioToBasePeak,

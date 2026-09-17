@@ -40,7 +40,7 @@ namespace EngineLayer
 
         protected override MetaMorpheusEngineResults RunSpecific()
         {
-            ProteinScoringAndFdrResults myAnalysisResults = new ProteinScoringAndFdrResults(this);
+            ProteinScoringAndFdrResults myAnalysisResults = new ProteinScoringAndFdrResults(this) { FilterThreshold = _filterThreshold };
             ScoreProteinGroups(ProteinGroups, _FilteredPsms);
             myAnalysisResults.SortedAndScoredProteinGroups = DoProteinFdr(ProteinGroups);
 

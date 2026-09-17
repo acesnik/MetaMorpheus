@@ -1079,5 +1079,21 @@ namespace Test
 
             Assert.That(result.RTPredictorName, Is.EqualTo(RTPredictorNames.SSRCalc));
         }
+
+        /// <summary>
+        /// Every CommonParameters property has to be re-passed in SetAllFileSpecificCommonParams or the
+        /// file-specific copy reverts to the constructor default. QValueCutoffForPepCalculation was missing,
+        /// so a value set in the task toml never reached PEP training.
+        /// </summary>
+        [Test]
+        public static void SetAllFileSpecificCommonParams_PreservesQValueCutoffForPepCalculation()
+        {
+            var commonParams = new CommonParameters(qValueCutoffForPepCalculation: 0.02);
+            var fileSpecificParams = new FileSpecificParameters(); // simulates a companion <basename>.toml existing
+
+            var result = MetaMorpheusTask.SetAllFileSpecificCommonParams(commonParams, fileSpecificParams);
+
+            Assert.That(result.QValueCutoffForPepCalculation, Is.EqualTo(0.02));
+        }
     }
 }

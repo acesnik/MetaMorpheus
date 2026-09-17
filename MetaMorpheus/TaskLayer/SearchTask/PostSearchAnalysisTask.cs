@@ -1182,8 +1182,6 @@ namespace TaskLayer
                     includeAmbiguous: true,
                     includeHighQValuePsms: Parameters.SearchParameters.WriteHighQValuePsms);
 
-                int count = psmsToWrite.Where(psm => psm.PsmFdrInfo.PEP <= 0.01).Count();
-
                 // write PSMs
                 string writtenFile = Path.Combine(Parameters.IndividualResultsOutputFolder, strippedFileName + $"_{GlobalVariables.AnalyteType.GetSpectralMatchLabel()}s.{GlobalVariables.AnalyteType.GetSpectralMatchExtension()}");
                 WritePsmsToTsv(psmsToWrite, writtenFile);
@@ -1509,7 +1507,9 @@ namespace TaskLayer
                         CommonParameters.PrecursorMassTolerance,
                         CommonParameters.DigestionParams.MaxMissedCleavages,
                         mzidFilePath,
-                        Parameters.SearchParameters.IncludeModMotifInMzid);
+                        Parameters.SearchParameters.IncludeModMotifInMzid,
+                        filteredPsmsByFile.FilterThreshold,
+                        ProteinGroupQValueThreshold(filteredPsmsByFile.FilterType));
 
                     FinishedWritingFile(mzidFilePath, new List<string> { Parameters.SearchTaskId, "Individual Spectra Files", fullFilePath });
                 }

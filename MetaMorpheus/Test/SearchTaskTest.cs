@@ -725,7 +725,7 @@ namespace Test
 
             MzIdentMLWriter.WriteMzIdentMl(new List<SpectralMatch> { psm }, new List<ProteinGroup>(), new List<Modification>(),
                 new List<Modification>(), new List<SilacLabel>(), new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
-                0, path, true);
+                0, path, true, psmQValueThreshold: 0.01, proteinQValueThreshold: 0.01);
 
             var file = File.ReadAllLines(path);
             bool found = false;
@@ -737,6 +737,54 @@ namespace Test
                 }
             }
             Assert.That(found);
+
+            File.Delete(path);
+        }
+
+        /// <summary>
+        /// The mzID declares the FDR thresholds the results were filtered at (MS:1001448 for PSMs,
+        /// MS:1001447 for protein groups) and stamps passThreshold on each identification. All of these were
+        /// hardcoded to 1%, so a search run at any other threshold produced a file that misreported itself.
+        /// </summary>
+        [Test]
+        public static void TestMzIdentMlWriterHonorsQValueThresholds()
+        {
+            Protein protein = new Protein("PEPTIDE", "accession1", databaseFilePath: "temp");
+            var peptide = protein.Digest(new DigestionParams(), new List<Modification>(), new List<Modification>()).First();
+
+            MsDataScan dfb = new MsDataScan(new MzSpectrum(new double[] { 1 }, new double[] { 1 }, false), 0, 1, true, Polarity.Positive, double.NaN, null,
+                null, MZAnalyzerType.Orbitrap, double.NaN, null, null, "scan=1", double.NaN, null, null, double.NaN, null, DissociationType.AnyActivationType, 0, null);
+            Ms2ScanWithSpecificMass scan = new Ms2ScanWithSpecificMass(dfb, 2, 0, "File", new CommonParameters());
+
+            var psm = new PeptideSpectralMatch(peptide, 0, 1, 0, scan, new CommonParameters(), new List<MatchedFragmentIon>());
+            psm.ResolveAllAmbiguities();
+            psm.SetFdrValues(0, 0, 0.03, 0, 0, 0, 0, 0); // q-value sits between the two thresholds used below
+
+            string path = Path.Combine(TestContext.CurrentContext.TestDirectory, "QValueThresholdOutput.mzID");
+
+            MzIdentMLWriter.WriteMzIdentMl(new List<SpectralMatch> { psm }, new List<ProteinGroup>(), new List<Modification>(),
+                new List<Modification>(), new List<SilacLabel>(), new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
+                0, path, true, psmQValueThreshold: 0.05, proteinQValueThreshold: 0.02);
+
+            var doc = System.Xml.Linq.XDocument.Load(path);
+            var ns = doc.Root.Name.Namespace;
+            string DeclaredThreshold(string accession) => doc.Descendants(ns + "cvParam")
+                .First(e => (string)e.Attribute("accession") == accession).Attribute("value").Value;
+
+            Assert.That(DeclaredThreshold("MS:1001448"), Is.EqualTo("0.05"), "PSM-level FDR threshold should be the one the results were filtered at");
+            Assert.That(DeclaredThreshold("MS:1001447"), Is.EqualTo("0.02"), "protein-level FDR threshold should be the one the results were filtered at");
+            Assert.That((string)doc.Descendants(ns + "SpectrumIdentificationItem").Single().Attribute("passThreshold"),
+                Is.EqualTo("true"), "a PSM at q = 0.03 passes a 5% threshold");
+
+            // the same PSM must fail a 1% threshold
+            MzIdentMLWriter.WriteMzIdentMl(new List<SpectralMatch> { psm }, new List<ProteinGroup>(), new List<Modification>(),
+                new List<Modification>(), new List<SilacLabel>(), new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
+                0, path, true, psmQValueThreshold: 0.01, proteinQValueThreshold: 0.01);
+
+            doc = System.Xml.Linq.XDocument.Load(path);
+            ns = doc.Root.Name.Namespace;
+            Assert.That((string)doc.Descendants(ns + "SpectrumIdentificationItem").Single().Attribute("passThreshold"),
+                Is.EqualTo("false"), "a PSM at q = 0.03 fails a 1% threshold");
 
             File.Delete(path);
         }
@@ -767,7 +815,7 @@ namespace Test
 
             MzIdentMLWriter.WriteMzIdentMl(new List<SpectralMatch> { psm }, new List<ProteinGroup>(), new List<Modification>(),
                 new List<Modification>(), new List<SilacLabel>(), new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
-                0, path, true);
+                0, path, true, psmQValueThreshold: 0.01, proteinQValueThreshold: 0.01);
 
             var file = File.ReadAllLines(path);
             bool found = false;
@@ -783,7 +831,7 @@ namespace Test
             // test again w/ NOT appending motifs onto mod names
             MzIdentMLWriter.WriteMzIdentMl(new List<SpectralMatch> { psm }, new List<ProteinGroup>(), new List<Modification>(),
                 new List<Modification>(), new List<SilacLabel>(), new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
-                0, path, false);
+                0, path, false, psmQValueThreshold: 0.01, proteinQValueThreshold: 0.01);
 
             file = File.ReadAllLines(path);
             found = false;

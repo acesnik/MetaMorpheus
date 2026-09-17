@@ -1,4 +1,5 @@
 ﻿using Chemistry;
+using EngineLayer.SpectrumMatch;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,7 +20,18 @@ namespace EngineLayer.ModificationAnalysis
 
             ModificationAnalysisResults myAnalysisResults = new ModificationAnalysisResults(this);
 
-            var confidentTargetPsms = NewPsms.Where(b => b.FdrInfo.QValue <= 0.01 && !b.IsDecoy).ToList();
+            // filter the same way the rest of the post-search pipeline does, so these counts describe the
+            // PSMs that were actually reported rather than a fixed 1% FDR
+            var filtered = FilteredPsms.Filter(NewPsms,
+                CommonParameters,
+                includeDecoys: false,
+                includeContaminants: true,
+                includeAmbiguous: true,
+                includeHighQValuePsms: false);
+            myAnalysisResults.FilterThreshold = filtered.FilterThreshold;
+            myAnalysisResults.FilterTypeString = filtered.GetFilterTypeString();
+
+            var confidentTargetPsms = filtered.FilteredPsmsList;
 
             // For the database ones, only need un-ambiguous protein and location in protein
             var forObserved = confidentTargetPsms

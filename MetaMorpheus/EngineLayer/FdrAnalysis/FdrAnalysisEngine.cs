@@ -72,7 +72,8 @@ namespace EngineLayer.FdrAnalysis
             Status("Running FDR analysis...");
             DoFalseDiscoveryRateAnalysis(myAnalysisResults);
             Status("Done.");
-            myAnalysisResults.PsmsWithin1PercentFdr = AllPsms.Count(b => b.FdrInfo.QValue <= 0.01 && !b.IsDecoy);
+            myAnalysisResults.QValueThreshold = CommonParameters.QValueThreshold;
+            myAnalysisResults.PsmsWithinQValueThreshold = AllPsms.Count(b => b.FdrInfo.QValue <= CommonParameters.QValueThreshold && !b.IsDecoy);
 
             return myAnalysisResults;
         }
@@ -163,7 +164,7 @@ namespace EngineLayer.FdrAnalysis
                 psms = psms.OrderByDescending(p => p).ToList();
                 CalculateQValue(psms, peptideLevelCalculation: false, pepCalculation: false);
                 
-                CountPsm(psms);
+                CountPsm(psms, commonParameters.QValueThreshold);
             }
         }
 
@@ -476,21 +477,21 @@ namespace EngineLayer.FdrAnalysis
         }
 
         /// <summary>
-        /// This method gets the count of PSMs with the same full sequence (with q-value < 0.01) to include in the psmtsv output
+        /// This method gets the count of PSMs with the same full sequence (at or below qValueThreshold) to include in the psmtsv output
         /// </summary>
-        public static void CountPsm(List<SpectralMatch> proteasePsms)
+        public static void CountPsm(List<SpectralMatch> proteasePsms, double qValueThreshold)
         {
-            // exclude ambiguous psms and has a fdr cutoff = 0.01
+            // exclude ambiguous psms and apply the caller's q-value cutoff
             var allUnambiguousPsms = proteasePsms.Where(psm => psm.FullSequence != null).ToList();
 
-            var unambiguousPsmsLessThanOnePercentFdr = allUnambiguousPsms.Where(psm =>
-                    psm.FdrInfo.QValue <= 0.01
-                    && psm.FdrInfo.QValueNotch <= 0.01)
+            var unambiguousPsmsBelowThreshold = allUnambiguousPsms.Where(psm =>
+                    psm.FdrInfo.QValue <= qValueThreshold
+                    && psm.FdrInfo.QValueNotch <= qValueThreshold)
                 .GroupBy(p => p.FullSequence);
 
             Dictionary<string, int> sequenceToPsmCount = new Dictionary<string, int>();
 
-            foreach (var sequenceGroup in unambiguousPsmsLessThanOnePercentFdr)
+            foreach (var sequenceGroup in unambiguousPsmsBelowThreshold)
             {
                 sequenceToPsmCount.TryAdd(sequenceGroup.First().FullSequence, sequenceGroup.Count());
             }

@@ -10,7 +10,12 @@ namespace EngineLayer.FdrAnalysis
             AnalysisType = analysisType;
         }
 
-        public int PsmsWithin1PercentFdr { get; set; }
+        public int PsmsWithinQValueThreshold { get; set; }
+        /// <summary>
+        /// The q-value threshold the count above was taken at, so the summary is not labelled 1% FDR
+        /// when the user searched with a different threshold.
+        /// </summary>
+        public double QValueThreshold { get; set; } = 0.01;
         public bool DeltaScoreImprovement { get; set; }
         private string AnalysisType { get; set; }
         public string BinarySearchTreeMetrics { get; set; } //See PEPValueAnalysisGeneric public static string PrintBinaryClassificationMetrics method for explanation
@@ -19,7 +24,7 @@ namespace EngineLayer.FdrAnalysis
         {
             var sb = new StringBuilder();
             sb.AppendLine(base.ToString());
-            sb.AppendLine($"{AnalysisType}s within 1% FDR: {PsmsWithin1PercentFdr.ToString()}");
+            sb.AppendLine($"{AnalysisType}s within {FdrPercent(QValueThreshold)}% FDR: {PsmsWithinQValueThreshold.ToString()}");
             sb.AppendLine($"Delta Score Used for FDR Analysis: {DeltaScoreImprovement.ToString()}");
             sb.AppendLine(BinarySearchTreeMetrics);
             return sb.ToString();

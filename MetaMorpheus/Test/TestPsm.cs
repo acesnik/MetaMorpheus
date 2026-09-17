@@ -392,7 +392,7 @@ namespace Test
 
             List<(string fileName, CommonParameters fileSpecificParameters)> fsp = new List<(string fileName, CommonParameters fileSpecificParameters)> { ("filename", new CommonParameters()) };
 
-            FdrAnalysisEngine.CountPsm(allPsms);
+            FdrAnalysisEngine.CountPsm(allPsms, qValueThreshold: 0.01);
             var psmGroups = allPsms.Where(psm => psm.FullSequence != null && psm.PsmCount > 0).GroupBy(p => p.FullSequence).ToList();
             Assert.That(psmGroups.First().Count() == 2);
             Assert.That(psmGroups.First().First().PsmCount == 1);
@@ -400,9 +400,44 @@ namespace Test
             psm2.SetFdrValues(0, 0, 0, 0, 0, 0, 0, 0);
             psm3.ResolveAllAmbiguities();
 
-            FdrAnalysisEngine.CountPsm(allPsms);
+            FdrAnalysisEngine.CountPsm(allPsms, qValueThreshold: 0.01);
             psmGroups = allPsms.Where(psm => psm.FullSequence != null && psm.PsmCount > 0).GroupBy(p => p.FullSequence).ToList();
             Assert.That(psmGroups.First().Count() == 3);
+        }
+
+        /// <summary>
+        /// The Spectrum Match Count column counted PSMs at a hardcoded 1% FDR, so it disagreed with the rest
+        /// of the output whenever the search ran at a different q-value threshold.
+        /// </summary>
+        [Test]
+        public static void TestPsmCountRespectsQValueThreshold()
+        {
+            CommonParameters commonParameters = new CommonParameters();
+            var pep1 = new Protein("PEPTIDE", null).Digest(commonParameters.DigestionParams, new List<Modification>(), new List<Modification>()).First();
+            var pep2 = new Protein("PEPTIDE", null).Digest(commonParameters.DigestionParams, new List<Modification>(), new List<Modification>()).First();
+
+            TestDataFile t = new TestDataFile(new List<IBioPolymerWithSetMods> { pep1, pep2 });
+
+            Ms2ScanWithSpecificMass scan1 = new Ms2ScanWithSpecificMass(t.GetOneBasedScan(2), 0, 1, null, new CommonParameters());
+            SpectralMatch psm1 = new PeptideSpectralMatch(pep1, 0, 0, 0, scan1, commonParameters, new List<MatchedFragmentIon>());
+            psm1.SetFdrValues(0, 0, 0, 0, 0, 0, 0, 0);
+            psm1.ResolveAllAmbiguities();
+
+            Ms2ScanWithSpecificMass scan2 = new Ms2ScanWithSpecificMass(t.GetOneBasedScan(4), 0, 1, null, new CommonParameters());
+            SpectralMatch psm2 = new PeptideSpectralMatch(pep2, 0, 0, 0, scan2, commonParameters, new List<MatchedFragmentIon>());
+            psm2.SetFdrValues(0, 0, 0.02, 0, 0, 0, 0, 0); // q-value sits between the two thresholds below
+            psm2.ResolveAllAmbiguities();
+
+            var allPsms = new List<SpectralMatch> { psm1, psm2 };
+
+            // at 1% FDR only psm1 clears the threshold, so the shared sequence is seen once
+            FdrAnalysisEngine.CountPsm(allPsms, qValueThreshold: 0.01);
+            Assert.That(psm1.PsmCount, Is.EqualTo(1));
+
+            // at 5% FDR psm2 clears it as well and the count for that sequence rises
+            FdrAnalysisEngine.CountPsm(allPsms, qValueThreshold: 0.05);
+            Assert.That(psm1.PsmCount, Is.EqualTo(2));
+            Assert.That(psm2.PsmCount, Is.EqualTo(2));
         }
 
         [Test]

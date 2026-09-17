@@ -270,7 +270,7 @@ namespace Test
         {
             MzIdentMLWriter.WriteMzIdentMl(psms, groups, new List<Modification>(), new List<Modification>(),
                 silacLabels, new List<DigestionAgent>(), new PpmTolerance(20), new PpmTolerance(20),
-                0, path, true);
+                0, path, true, psmQValueThreshold: 0.01, proteinQValueThreshold: 0.01);
         }
 
         private static int CountElements(string path, string localName)
