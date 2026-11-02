@@ -963,7 +963,7 @@ namespace Test.MetaDraw
         public static void TestPtmLegendViewModels()
         {
             string psmsPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TopDownTestData\TDGPTMDSearchResults.psmtsv");
+                "TopDownTestData", "TDGPTMDSearchResults.psmtsv");
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmsPath, out List<string> warnings)
                 .Where(p => p.AmbiguityLevel == "1").ToList();
             PsmFromTsv psm = psms.First(p =>

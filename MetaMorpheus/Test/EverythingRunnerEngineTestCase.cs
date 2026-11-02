@@ -100,7 +100,7 @@ namespace Test
         #region Case Setup
 
         internal static string ResultDirectory =>
-            Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PostSearchAnalysisTaskTest");
+            Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PostSearchAnalysisTaskTest");
 
         private static Dictionary<EverythingRunnerEngineTestCases, EverythingRunnerEngineTestCase> _cases;
 
@@ -140,16 +140,16 @@ namespace Test
             _cases = new();
 
             string myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\Task1-SearchTaskconfig.toml");
+                "TestData", "Task1-SearchTaskconfig.toml");
             SearchTask searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
             string myFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\TaGe_SA_A549_3_snip.mzML");
+                "TestData", "TaGe_SA_A549_3_snip.mzML");
             string myFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\TaGe_SA_A549_3_snip_2.mzML");
+                "TestData", "TaGe_SA_A549_3_snip_2.mzML");
             string myFile3 = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\snippet.d");
+                "TestData", "snippet.d");
             string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\TaGe_SA_A549_3_snip.fasta");
+                "TestData", "TaGe_SA_A549_3_snip.fasta");
             searchTaskLoaded.CommonParameters.QValueCutoffForPepCalculation = 0.01;
             // These cases check the per-file tables and counts, which are off by default; the toml leaves the key out.
             searchTaskLoaded.SearchParameters.WriteIndividualFiles = true;
@@ -169,7 +169,7 @@ namespace Test
                     new List<DbForTask> { new DbForTask(myDatabase, false) }, false));
 
             // Bottom-up Q-Value with timsTOF file
-            var timsDb = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\timsTofSnippet.fasta");
+            var timsDb = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "timsTofSnippet.fasta");
             _cases.Add(EverythingRunnerEngineTestCases.timsTOFRawFileMixed,
                 new EverythingRunnerEngineTestCase(EverythingRunnerEngineTestCases.timsTOFRawFileMixed,
                     new List<(string, MetaMorpheusTask)> { ("postSearchAnalysisTaskTestOutput", searchTaskLoaded) },
@@ -199,7 +199,7 @@ namespace Test
 
             // Bottom-up Pep Q-value Test Case
             myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\Task2-SearchTaskconfig.toml");
+                "TestData", "Task2-SearchTaskconfig.toml");
             searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
             searchTaskLoaded.CommonParameters.QValueCutoffForPepCalculation = 0.01;
             searchTaskLoaded.SearchParameters.WriteIndividualFiles = true;
@@ -211,11 +211,11 @@ namespace Test
 
             // Top-down Q-value Test Case
             myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TopDownTestData\TopDownSearchToml.toml");
+                "TopDownTestData", "TopDownSearchToml.toml");
             searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            myFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            myFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\slicedTDYeast.mzML");
-            myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            myFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            myFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "slicedTDYeast.mzML");
+            myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
             _cases.Add(EverythingRunnerEngineTestCases.TopDownQValue,
                 new EverythingRunnerEngineTestCase(EverythingRunnerEngineTestCases.TopDownQValue,
                     new List<(string, MetaMorpheusTask)> { ("postSearchAnalysisTaskTestOutput", searchTaskLoaded) },

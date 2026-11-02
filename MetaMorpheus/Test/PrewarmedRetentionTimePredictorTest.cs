@@ -469,12 +469,12 @@ namespace Test
             Assert.That(warm.MissCount, Is.Zero);
         }
 
-        private static string PepOutputFolder() => Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\");
+        private static string PepOutputFolder() => Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData");
 
         /// <summary>The same search <see cref="FdrTest.TestComputePEPValue"/> runs, with the file's separation type set.</summary>
         private static (List<SpectralMatch> Psms, List<(string fileName, CommonParameters fileSpecificParameters)> Fsp) SearchForPep(string separationType)
         {
-            string origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            string origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             var commonParameters = new CommonParameters(digestionParams: new DigestionParams(), separationType: separationType);
             var fsp = new List<(string fileName, CommonParameters fileSpecificParameters)>
             {
@@ -482,7 +482,7 @@ namespace Test
             };
 
             var myMsDataFile = new MyFileManager(true).LoadFile(origDataFile, commonParameters);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out _,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out _,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                 ProteinDbLoader.UniprotOrganismRegex, -1);
             var scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, origDataFile, commonParameters).OrderBy(b => b.PrecursorMass).ToArray();

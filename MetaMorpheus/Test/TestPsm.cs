@@ -130,13 +130,13 @@ namespace Test
             };
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPSMOutput");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
             var engine = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("QValueTest", searchTask) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engine.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"QValueTest\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "QValueTest", "AllPSMs.psmtsv");
             var lines = File.ReadAllLines(psmFile);
             Assert.That(lines.Length == 11);
 
@@ -154,14 +154,14 @@ namespace Test
             
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters();
             var fsp = new List<(string fileName, CommonParameters fileSpecificParameters)>();
             fsp.Add((origDataFile, CommonParameters));
             var myMsDataFile = myFileManager.LoadFile(origDataFile, CommonParameters);
             var searchModes = new SinglePpmAroundZeroSearchMode(5);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                 ProteinDbLoader.UniprotOrganismRegex, -1);
             var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, null, new CommonParameters()).OrderBy(b => b.PrecursorMass).ToArray();
@@ -189,15 +189,15 @@ namespace Test
         {
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters();
             var myMsDataFile = myFileManager.LoadFile(origDataFile, CommonParameters);
             var searchModes = new SinglePpmAroundZeroSearchMode(5);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
             var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, null, new CommonParameters()).OrderBy(b => b.PrecursorMass).ToArray();
             SpectralMatch[] allPsmsArray = new SpectralMatch[listOfSortedms2Scans.Length];
             bool writeSpetralLibrary = false;
@@ -224,8 +224,8 @@ namespace Test
         public static void TestDecoyContaminantsFilter()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPSMOutput");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
             //Filter decoys
             SearchTask searchTaskDecoy = new SearchTask();
@@ -234,7 +234,7 @@ namespace Test
             var engineDecoy = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("DecoyTest", searchTaskDecoy) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineDecoy.Run();
 
-            string psmFileDecoy = Path.Combine(outputFolder, @"DecoyTest\AllPSMs.psmtsv");
+            string psmFileDecoy = Path.Combine(outputFolder, "DecoyTest", "AllPSMs.psmtsv");
             var linesDecoy = File.ReadAllLines(psmFileDecoy);
             Assert.That(linesDecoy.Length == 8);
 
@@ -246,11 +246,11 @@ namespace Test
             var engineContaminant = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("ContaminantTest", searchTaskContaminant) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineContaminant.Run();
 
-            string psmFileContaminant = Path.Combine(outputFolder, @"ContaminantTest\AllPSMs.psmtsv");
+            string psmFileContaminant = Path.Combine(outputFolder, "ContaminantTest", "AllPSMs.psmtsv");
             var linesContaminant = File.ReadAllLines(psmFileContaminant);
             Assert.That(linesContaminant.Length == 11);
 
-            string proteinFileContaminant = Path.Combine(outputFolder, @"ContaminantTest\AllQuantifiedProteinGroups.tsv");
+            string proteinFileContaminant = Path.Combine(outputFolder, "ContaminantTest", "AllQuantifiedProteinGroups.tsv");
             var linesContaminantProtein = File.ReadAllLines(proteinFileContaminant);
             Assert.That(linesContaminantProtein.Length == 7);
 
@@ -273,14 +273,14 @@ namespace Test
             var engineDecoyContaminant = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("DecoyContaminantTest", searchTaskDecoyContaminant) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, true) }, outputFolder);
             engineContaminant.Run();
 
-            string psmFileDecoyContaminant = Path.Combine(outputFolder, @"DecoyContaminantTest\AllPSMs.psmtsv");
+            string psmFileDecoyContaminant = Path.Combine(outputFolder, "DecoyContaminantTest", "AllPSMs.psmtsv");
             var linesDecoyContaminant = File.ReadAllLines(psmFileContaminant);
             Assert.That(linesContaminant.Length == 11);
 
             var engineDecoyContaminant2 = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("DecoyContaminantTest", searchTaskDecoyContaminant2) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, true) }, outputFolder);
             engineContaminant2.Run();
 
-            string psmFileDecoyContaminant2 = Path.Combine(outputFolder, @"DecoyContaminantTest\AllPSMs.psmtsv");
+            string psmFileDecoyContaminant2 = Path.Combine(outputFolder, "DecoyContaminantTest", "AllPSMs.psmtsv");
             var linesDecoyContaminant2 = File.ReadAllLines(psmFileContaminant);
             Assert.That(linesContaminant2.Length == 1);
 
@@ -290,7 +290,7 @@ namespace Test
             var engine = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("NoFilterTest", searchTask) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, true) }, outputFolder);
             engine.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"NoFilterTest\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "NoFilterTest", "AllPSMs.psmtsv");
             var lines = File.ReadAllLines(psmFile);
             Assert.That(lines.Length == 11);
             Directory.Delete(outputFolder, true);
@@ -410,8 +410,8 @@ namespace Test
         {
             SearchTask task = new SearchTask();
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPsmCount2");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
             Directory.CreateDirectory(outputFolder);
 
             task.RunTask(outputFolder, new List<DbForTask> { new DbForTask(myDatabase, false) }, new List<string> { myFile }, "test");
@@ -670,7 +670,7 @@ namespace Test
         {
             //Test for Ms2WithSpecificMass
             //1: do the deconvolution and use isotopic envelope to find precursor info
-            string filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters();
             var myMsDataFile = myFileManager.LoadFile(filePath, CommonParameters);
@@ -717,7 +717,7 @@ namespace Test
 
             //Test for SpectralMatch
             SearchTask task = new SearchTask();
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
             List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(myDatabase, true, DecoyType.Reverse, false, out List<string> errors);
             var fsp = new List<(string, CommonParameters)>();
             CommonParameters commonParameters = new CommonParameters();

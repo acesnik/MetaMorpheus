@@ -391,8 +391,8 @@ namespace Test.MetaDraw
         {
             SearchTask searchTask = new SearchTask();
 
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawReadPsmFile");
 
             DbForTask db = new DbForTask(myDatabase, false);
@@ -414,7 +414,7 @@ namespace Test.MetaDraw
         public static void TestMetaDrawReadPsmFileWithoutSpectralAngle()
         {
             //test if the reader still works when psm file doesn't contain spectral angle as header.
-            string noSA = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\noSAreaderTest.psmtsv");
+            string noSA = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "noSAreaderTest.psmtsv");
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(noSA, out var warnings);
 
 
@@ -427,8 +427,8 @@ namespace Test.MetaDraw
         {
             SearchTask searchTask = new SearchTask();
 
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawReadPsmFile");
 
             DbForTask db = new DbForTask(myDatabase, false);
@@ -461,8 +461,8 @@ namespace Test.MetaDraw
             XLSearchTask searchTask = new XLSearchTask();
             searchTask.XlSearchParameters.Crosslinker = GlobalVariables.Crosslinkers.ToList()[1];
 
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSS_23747.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSS_23747.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawReadPsmFile");
 
             DbForTask db = new DbForTask(myDatabase, false);
@@ -480,7 +480,7 @@ namespace Test.MetaDraw
         [Test]
         public static void TestFindVariantCrossingIons()
         {
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\VariantCrossTest.psmtsv");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "VariantCrossTest.psmtsv");
             List<string> warnings = new List<string>();
             List<PsmFromTsv> psms;
 
@@ -527,8 +527,8 @@ namespace Test.MetaDraw
         public static void MetaDraw_TestStationarySequencePositioning()
         {
             var metadrawLogic = new MetaDrawLogic();
-            metadrawLogic.SpectralMatchResultFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchResults.psmtsv"));
-            metadrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchSingleSpectra.mzML"));
+            metadrawLogic.SpectralMatchResultFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchResults.psmtsv"));
+            metadrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchSingleSpectra.mzML"));
             var errors = metadrawLogic.LoadFiles(true, true);
             Assert.That(errors.Count == 1); // Singular error should be from not loading in the rest of the spectra that the search came from
 
@@ -613,8 +613,8 @@ namespace Test.MetaDraw
         public static void MetaDraw_SearchTaskTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_SearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -832,8 +832,8 @@ namespace Test.MetaDraw
         public static void MetaDraw_XlSearchTaskWithChildScansTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_XlSearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\ms2mixed_bsa_xlink.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "ms2mixed_bsa_xlink.mzML");
 
             // run task
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.CID, ms2childScanDissociationType: DissociationType.ETD,
@@ -981,9 +981,9 @@ namespace Test.MetaDraw
         public static void TestMetaDrawXlSpectralLibrary()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlOutputTestFile");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\RibosomeGO.fasta");
-            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\CrosslinkSpectralLibrary.msp");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "RibosomeGO.fasta");
+            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "CrosslinkSpectralLibrary.msp");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1069,8 +1069,8 @@ namespace Test.MetaDraw
         public static void MetaDraw_GlycoSearchTaskWithChildScansTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_GlycoSearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\leukosialin.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\sliced_glyco_hcd_ethcd.raw");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "leukosialin.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "sliced_glyco_hcd_ethcd.raw");
             
             // run task
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.HCD, ms2childScanDissociationType: DissociationType.EThcD);
@@ -1229,8 +1229,8 @@ namespace Test.MetaDraw
         public static void MetaDraw_TestChimeraScanSpectrumDisplay()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_SearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             Regex illegalInFileName = new Regex(@"[\\/:*?""<>|]");
             Directory.CreateDirectory(outputFolder);
 
@@ -1417,8 +1417,8 @@ namespace Test.MetaDraw
         public static void TestMetaDrawErrors()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawErrors");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1468,8 +1468,8 @@ namespace Test.MetaDraw
         {
             // test loading when the file has a periods, commas, spaces in the name
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawLoadingWithWeirdFileNames");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\S.m,al. lC,al.ib r.at,i ble_Ye.ast.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "S.m,al. lC,al.ib r.at,i ble_Ye.ast.mzML");
 
 
             Directory.CreateDirectory(outputFolder);
@@ -1516,10 +1516,10 @@ namespace Test.MetaDraw
         public static void TestMetaDrawWithSpectralLibrary()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawWithSpectraLibrary");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858.fasta");
-            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_target.msp");
-            string library2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_decoy.msp");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\slicedMouse.raw");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858.fasta");
+            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_target.msp");
+            string library2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_decoy.msp");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "slicedMouse.raw");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1598,10 +1598,10 @@ namespace Test.MetaDraw
             // committed), then loaded through the unchanged MetaDrawLogic / MetaDrawDataLoader path —
             // mzLib's SpectralLibrary routes .msl transparently.
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawWithMslSpectraLibrary");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858.fasta");
-            string mspLibrary1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_target.msp");
-            string mspLibrary2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_decoy.msp");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\slicedMouse.raw");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858.fasta");
+            string mspLibrary1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_target.msp");
+            string mspLibrary2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_decoy.msp");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "slicedMouse.raw");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1685,8 +1685,8 @@ namespace Test.MetaDraw
         public static void TestPsmFromTsvIonParsing()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPsmFromTsvIonParsing");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\slicedMouse.raw");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "slicedMouse.raw");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1746,8 +1746,8 @@ namespace Test.MetaDraw
         {
             // load results into metadraw
             var metadrawLogic = new MetaDrawLogic();
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\InternalTest.mgf");
-            string psmFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SequenceCoverageTestPSM.psmtsv");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "InternalTest.mgf");
+            string psmFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SequenceCoverageTestPSM.psmtsv");
             metadrawLogic.SpectraFilePaths.Add(spectraFile);
             metadrawLogic.SpectralMatchResultFilePaths.Add(psmFile);
             var errors = metadrawLogic.LoadFiles(true, true);
@@ -1770,8 +1770,8 @@ namespace Test.MetaDraw
         {
             // load results into metadraw
             var metadrawLogic = new MetaDrawLogic();
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\ms2mixed_bsa_xlink.mzML");
-            string psmFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\XL_Intralinks_MIons.tsv");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "ms2mixed_bsa_xlink.mzML");
+            string psmFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "XL_Intralinks_MIons.tsv");
             metadrawLogic.SpectraFilePaths.Add(spectraFile);
             metadrawLogic.SpectralMatchResultFilePaths.Add(psmFile);
             var errors = metadrawLogic.LoadFiles(true, true);
@@ -1793,10 +1793,10 @@ namespace Test.MetaDraw
         public static void TestMetaDrawLogicCleanUp()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawWithSpectraLibrary");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858.fasta");
-            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_target.msp");
-            string library2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\P16858_decoy.msp");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\slicedMouse.raw");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858.fasta");
+            string library1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_target.msp");
+            string library2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "P16858_decoy.msp");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "slicedMouse.raw");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1875,8 +1875,8 @@ namespace Test.MetaDraw
         public static void TestMetaDrawOutputFormats()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_SearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1984,8 +1984,8 @@ namespace Test.MetaDraw
         public static void TestMetaDrawSequenceDisplayOutputs()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"MetaDraw_SearchTaskTest");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
 
             if (Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
@@ -2090,8 +2090,8 @@ namespace Test.MetaDraw
         {
             SearchTask searchTask = new SearchTask();
 
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMetaDrawReadPsmFile");
 
             DbForTask db = new DbForTask(myDatabase, false);
@@ -2190,7 +2190,7 @@ namespace Test.MetaDraw
             Assert.That(items10[1].Value, Is.EqualTo(3));
 
             //test variant plotting
-            string variantFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\VariantCrossTest.psmtsv");
+            string variantFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "VariantCrossTest.psmtsv");
             List<string> warningsVariants = new List<string>();
             List<PsmFromTsv> parsedPsmsWithVariants;
             parsedPsmsWithVariants = SpectrumMatchTsvReader.ReadPsmTsv(variantFile, out warningsVariants);
@@ -3247,7 +3247,7 @@ namespace Test.MetaDraw
             int takeCount = 24)
         {
             string psmPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\XCorrSearchTest_AllPSMs.psmtsv");
+                "TestData", "XCorrSearchTest_AllPSMs.psmtsv");
 
             var parsedPsms = SpectrumMatchTsvReader.ReadTsv(psmPath, out _);
 

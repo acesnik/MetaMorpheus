@@ -28,9 +28,9 @@ namespace Test
             try
             {
                 string fasta = Path.Combine(inputFolder, "DbForPrunedDb.fasta");
-                File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"), fasta, true);
+                File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"), fasta, true);
                 string modifiedFile = Path.Combine(inputFolder, "withMod.mzml");
-                File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml"), modifiedFile, true);
+                File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml"), modifiedFile, true);
 
                 // find the oxidized spectrum with one search, then write the same file without it
                 var firstPass = RunGptmdThenSearch(Path.Combine(outputFolder, "firstPass"), fasta, new List<string> { modifiedFile });

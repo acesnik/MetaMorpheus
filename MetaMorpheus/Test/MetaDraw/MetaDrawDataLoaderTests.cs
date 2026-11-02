@@ -94,7 +94,7 @@ public class MetaDrawDataLoaderTests
     {
         var bioPolymerTab = new BioPolymerTabViewModel(logic, "C:\\Export");
         bioPolymerTab.DatabasePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory,
-            @"TestData\TaGe_SA_A549_3_snip.fasta"));
+            "TestData", "TaGe_SA_A549_3_snip.fasta"));
         logic.AllSpectralMatches.Add(new DummySpectralmatch());
         loader.GetType().GetMethod("ProcessBioPolymerTab", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.Invoke(loader, new object[] { bioPolymerTab, "C:\\Export", CancellationToken.None });
@@ -214,9 +214,9 @@ public class MetaDrawDataLoaderTests
             Assert.Fail();
 
         string specFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory,
-            @"TestData\TaGe_SA_A549_3_snip.mzML");
+            "TestData", "TaGe_SA_A549_3_snip.mzML");
         string specFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory,
-            @"TestData\TaGe_SA_A549_3_snip_2.mzML");
+            "TestData", "TaGe_SA_A549_3_snip_2.mzML");
         var dbPath = searchTestCase.DatabaseList.First().FilePath;
         var smPath = Directory.GetFiles(searchTestCase.OutputDirectory, "*.psmtsv", SearchOption.AllDirectories).First();
 

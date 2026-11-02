@@ -151,17 +151,17 @@ namespace Test
             var property = type.GetProperty("QvalueThresholdOverride");
             property.SetValue(null, true); 
 
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestConsistency");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestConsistency");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
 
             searchTaskLoaded.CommonParameters.QValueCutoffForPepCalculation = 0.01;
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
 
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
             PsmFromTsv psm = parsedPsms.First();
@@ -215,16 +215,16 @@ namespace Test
         [Test]
         public static void TestClassicSearchXcorrWithToml()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Search.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Search.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestConsistency");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestConsistency");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
 
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
 
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
 
@@ -232,14 +232,14 @@ namespace Test
             Assert.That(parsedPsms.Count(p => p.QValue < 0.01), Is.EqualTo(218)); //psms with q-value < 0.01 as read from psmtsv, including decoys
             Assert.That(warnings.Count, Is.EqualTo(0));
 
-            int countFromResultsTxt = Convert.ToInt32(File.ReadAllLines(Path.Combine(outputFolder, @"SearchTOML\results.txt")).ToList().FirstOrDefault(l => l.Contains("All target")).Split(":")[1].Trim());
+            int countFromResultsTxt = Convert.ToInt32(File.ReadAllLines(Path.Combine(outputFolder, "SearchTOML", "results.txt")).ToList().FirstOrDefault(l => l.Contains("All target")).Split(":")[1].Trim());
             Assert.That(countFromResultsTxt, Is.EqualTo(216));
         }
 
         [Test]
         public static void TestFilteringAndXCorrProcessing()
         {
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\sliced_b6.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "sliced_b6.mzML");
             CommonParameters CommonParameters = new CommonParameters(
                 dissociationType: DissociationType.LowCID,
                 maxThreadsToUsePerFile: 1,
@@ -265,7 +265,7 @@ namespace Test
             Assert.That(myScan1.MassSpectrum.XArray.Length == 980);
             Assert.That(827.422, Is.EqualTo(myScan1.IsolationMz.Value).Within(0.001));
 
-            var expectedResultsUnprocessed = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\unprocessedMzAndIntensities.tsv"));
+            var expectedResultsUnprocessed = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "unprocessedMzAndIntensities.tsv"));
 
             // assert peak m/zs and intensities
             for (int p = 0; p < myScan1.MassSpectrum.XArray.Length; p++)
@@ -288,7 +288,7 @@ namespace Test
             Assert.That(myScan1.MassSpectrum.XcorrProcessed == true);
             Assert.That(myScan1.MassSpectrum.XArray.Length == 459);
 
-            var expectedResults = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\XCorrUnitTest.tsv"));
+            var expectedResults = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "XCorrUnitTest.tsv"));
 
             // assert peak m/zs and intensities
             for (int p = 0; p < myScan1.MassSpectrum.XArray.Length; p++)
@@ -658,7 +658,7 @@ namespace Test
             var property = type.GetProperty("QvalueThresholdOverride");
             property.SetValue(null, true);
 
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
 
             CommonParameters CommonParameters = new CommonParameters(
@@ -696,7 +696,7 @@ namespace Test
             SpectralMatch[] fileSpecificPsms = new PeptideSpectralMatch[arrayOfMs2ScansSortedByMass.Length];
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestClassicSearchEngineLowResSimple");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -764,7 +764,7 @@ namespace Test
             var property = type.GetProperty("QvalueThresholdOverride");
             property.SetValue(null, true);
 
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
 
             CommonParameters CommonParameters = new CommonParameters(
@@ -800,8 +800,8 @@ namespace Test
             SpectralMatch[] fileSpecificPsms = new PeptideSpectralMatch[arrayOfMs2ScansSortedByMass.Length];
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestModernSearchEngineLowResSimple");
-            //string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\LowResSnip_B6_mouse_11700_117500.xml.gz");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            //string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "LowResSnip_B6_mouse_11700_117500.xml.gz");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -1060,17 +1060,17 @@ namespace Test
         [Test]
         public static void TestNonSpecificEnzymeSearchEngine()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NonSpecificSearchToml.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "NonSpecificSearchToml.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NonSpecificSearchTest");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "NonSpecificSearchTest");
             Directory.CreateDirectory(outputFolder);
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\bosTaurusEnamPruned.xml");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "bosTaurusEnamPruned.xml");
 
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
 
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
 

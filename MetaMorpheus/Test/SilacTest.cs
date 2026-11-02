@@ -227,8 +227,8 @@ namespace Test
             _ = Directory.CreateDirectory(outputFolder);
             string theStringResult = task.RunTask(outputFolder, new List<DbForTask> { new DbForTask(xmlName, false) }, new List<string> { mzmlName, mzmlName2 }, "taskId1").ToString();
 
-            string mzIDPath1 = Path.ChangeExtension(TestContext.CurrentContext.TestDirectory + @"\TestSilac\Individual File Results\" + mzmlName, ".mzID");
-            string mzIDPath2 = Path.ChangeExtension(TestContext.CurrentContext.TestDirectory + @"\TestSilac\Individual File Results\" + mzmlName2, ".mzID");
+            string mzIDPath1 = Path.ChangeExtension(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSilac", "Individual File Results", mzmlName), ".mzID");
+            string mzIDPath2 = Path.ChangeExtension(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSilac", "Individual File Results", mzmlName2), ".mzID");
             Assert.That(File.Exists(mzIDPath1));
             Assert.That(File.Exists(mzIDPath2));
 
@@ -236,7 +236,7 @@ namespace Test
 
             ///Normal Peptide
             //test proteins
-            string[] output = File.ReadAllLines(TestContext.CurrentContext.TestDirectory + @"\TestSilac\AllQuantifiedProteinGroups.tsv");
+            string[] output = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSilac", "AllQuantifiedProteinGroups.tsv"));
             Assert.That(output.Length, Is.EqualTo(2));
             // All four channels report an intensity, but only the two real files get PSM-derived columns:
             // a label channel is an inference from one spectrum, not a separate acquisition, so it has no
@@ -272,7 +272,7 @@ namespace Test
             Assert.That(output.Select(l => l.Split('\t').Length).AllSame(), Is.True);
 
             //test peptides
-            output = File.ReadAllLines(TestContext.CurrentContext.TestDirectory + @"\TestSilac\AllQuantifiedPeptides.tsv");
+            output = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSilac", "AllQuantifiedPeptides.tsv"));
             Assert.That(output.Length, Is.EqualTo(2));
             Assert.That(output[1].Contains("PEPTIDEK\taccession1\t"));//test the sequence and accession were not modified
             Assert.That(output[1].Contains("875000")); //test intensity
@@ -280,7 +280,7 @@ namespace Test
             Assert.That(output[1].Contains("437500")); //test intensity
 
             //test peaks
-            output = File.ReadAllLines(TestContext.CurrentContext.TestDirectory + @"\TestSilac\AllQuantifiedPeaks.tsv");
+            output = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestSilac", "AllQuantifiedPeaks.tsv"));
             Assert.That(output.Length, Is.EqualTo(5));
 
             Assert.That(output[1].Contains("silac\t")); //test the filename was NOT modified (it was for proteins, but we don't want it for peptides)

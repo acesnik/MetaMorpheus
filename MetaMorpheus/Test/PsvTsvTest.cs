@@ -24,7 +24,7 @@ namespace Test
         [Test]
         public static void ReadOGlycoSinglePsms()
         {
-            string psmFile = @"TestData\oglycoSinglePsms.psmtsv";
+            string psmFile = Path.Combine("TestData", "oglycoSinglePsms.psmtsv");
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
             Assert.That(parsedPsms.Count, Is.EqualTo(2));
         }
@@ -32,7 +32,7 @@ namespace Test
         [Test]
         public static void ReadOGlycoPsms()
         {
-            string psmFile = @"TestData\oglyco.psmtsv";
+            string psmFile = Path.Combine("TestData", "oglyco.psmtsv");
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
             Assert.That(parsedPsms.Count, Is.EqualTo(9));
         }
@@ -40,7 +40,7 @@ namespace Test
         [Test]
         public static void ReadExcelEditedPsms()
         {
-            string psmFile = @"TestData\ExcelEditedPeptide.psmtsv";
+            string psmFile = Path.Combine("TestData", "ExcelEditedPeptide.psmtsv");
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
             Assert.That(parsedPsms.Count, Is.EqualTo(1));
             IEnumerable<string> expectedIons = new string[] { "y3+1", "y4+1", "b4+1", "b5+1", "b6+1", "b8+1" };
@@ -52,7 +52,7 @@ namespace Test
         public static void MetaDrawLogicTestOglyco()
         {
             var metadrawLogic = new MetaDrawLogic();
-            string psmFile = @"TestData\oglyco.psmtsv";
+            string psmFile = Path.Combine("TestData", "oglyco.psmtsv");
             metadrawLogic.SpectralMatchResultFilePaths.Add(psmFile);
             var errors = metadrawLogic.LoadFiles(false, true);
 
@@ -62,7 +62,7 @@ namespace Test
         [Test]
         public static void CrosslinkPsmFromTsvTest()
         {
-            string psmFile = @"XlTestData\XL_Intralinks_MIons.tsv";
+            string psmFile = Path.Combine("XlTestData", "XL_Intralinks_MIons.tsv");
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
             Assert.That(parsedPsms.Count, Is.EqualTo(1));
             Assert.That(parsedPsms[0].UniqueSequence, Is.EqualTo("EKVLTSSAR(2)SLGKVGTR(4)"));
@@ -71,7 +71,7 @@ namespace Test
         [Test]
         public static void CrosslinkPsmFromTsvToLibrarySpectrumTest()
         {
-            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\XL_Intralinks_MIons.tsv");
+            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "XL_Intralinks_MIons.tsv");
             List<string> warnings = new();
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmTsvPath, out warnings).ToList();
             Assert.That(warnings.Count == 0);
@@ -89,7 +89,7 @@ namespace Test
         public static void TestPsmFromTsvDisambiguatingConstructor()
         {
             // initialize values
-            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchResults.psmtsv");
+            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchResults.psmtsv");
             List<string> warnings = new();
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmTsvPath, out warnings);
             PsmFromTsv psm = psms.First();
@@ -157,7 +157,7 @@ namespace Test
         [Test]
         public static void TestParseModification()
         {
-            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchResults.psmtsv");
+            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchResults.psmtsv");
             List<string> warnings = new();
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmTsvPath, out warnings).Take(20).ToList();
             Assert.That(warnings.Count == 0);
@@ -208,7 +208,7 @@ namespace Test
         [Test]
         public static void TestToString()
         {
-            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchResults.psmtsv");
+            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchResults.psmtsv");
             List<string> warnings = new();
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmTsvPath, out warnings).Take(3).ToList();
             Assert.That(warnings.Count == 0);
@@ -221,14 +221,14 @@ namespace Test
         [Test]
         public static void TestSimpleToLibrarySpectrum()
         {
-            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\TDGPTMDSearchResults.psmtsv");
+            string psmTsvPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "TDGPTMDSearchResults.psmtsv");
             List<string> warnings = new();
             List<PsmFromTsv> psms = SpectrumMatchTsvReader.ReadPsmTsv(psmTsvPath, out warnings).Take(3).ToList();
             Assert.That(warnings.Count == 0);
 
             string librarySpectrum = psms[0].ToLibrarySpectrum().ToString();
 
-            string expectedLibrarySpectrum = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TopDownTestData\simple.msp"));
+            string expectedLibrarySpectrum = File.ReadAllText(Path.Combine(TestContext.CurrentContext.TestDirectory, "TopDownTestData", "simple.msp"));
 
             //not a great way to test equality but we are experiencing a great deal of 10th digit rounding differences
             Assert.That(Regex.Matches(expectedLibrarySpectrum, "ppm").Count, Is.EqualTo(Regex.Matches(librarySpectrum, "ppm").Count));

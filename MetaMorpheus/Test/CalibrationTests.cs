@@ -99,8 +99,8 @@ namespace Test
             Directory.CreateDirectory(outputFolder);
 
             string nonCalibratedFilePath = Path.Combine(unitTestFolder, "sample1.mzML");
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML"), nonCalibratedFilePath, true);
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML"), nonCalibratedFilePath, true);
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
             SpectraFileInfo fileInfo = new(nonCalibratedFilePath, "condition", 0, 0, 0);
             string uncalibratedDesignPath = ExperimentalDesign.WriteExperimentalDesignToFile(new List<SpectraFileInfo> { fileInfo });

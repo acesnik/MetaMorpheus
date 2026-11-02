@@ -25,13 +25,13 @@ namespace Test
         public static void MultipleCustomFragmentations()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestCustomFragmentations");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
             // create 3 search tasks with different custom fragmentation ions
-            var task1 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\customBY.toml"), MetaMorpheusTask.tomlConfig);
-            var task2 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\customCZ.toml"), MetaMorpheusTask.tomlConfig);
-            var task3 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\customBCZ.toml"), MetaMorpheusTask.tomlConfig);
+            var task1 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "customBY.toml"), MetaMorpheusTask.tomlConfig);
+            var task2 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "customCZ.toml"), MetaMorpheusTask.tomlConfig);
+            var task3 = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "customBCZ.toml"), MetaMorpheusTask.tomlConfig);
 
             // run all tasks
             DbForTask db = new DbForTask(myDatabase, false);
@@ -61,8 +61,8 @@ namespace Test
         public static void CustomFragmentationManyTasks()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestCustomFragmentations");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
             // setup tasks with custom ions
             var customIons = new List<ProductType>
@@ -81,7 +81,7 @@ namespace Test
             GptmdTask gptmdTask = new GptmdTask() {CommonParameters = gptmdCommonParam};
             
             SearchTask searchTask = Toml.ReadFile<SearchTask>(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\customBCZ.toml"),
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "customBCZ.toml"),
                 MetaMorpheusTask.tomlConfig);
 
             var taskCollection = new List<(string, MetaMorpheusTask)>
@@ -180,8 +180,8 @@ namespace Test
         {
             // path and custom ion setup
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestCustomFragmentations");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
             var customIons1 = new List<ProductType> { ProductType.b, ProductType.c, ProductType.zDot };
             var customIons2 = new List<ProductType> { ProductType.b, ProductType.c, ProductType.zDot, ProductType.y };

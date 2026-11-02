@@ -72,8 +72,8 @@ namespace Test.GuiTests
         // targets + reverse decoys are generated (count == 2 * entries). The fixtures live in
         // DatabaseTests\UniProtMock and contain 3 entries each.
         [Test]
-        [TestCase(@"DatabaseTests\UniProtMock\phi29_mock_reviewed.xml", true, 6)]   // 3 entries * 2 (target + decoy)
-        [TestCase(@"DatabaseTests\UniProtMock\phi29_mock_reviewed.fasta", false, 6)] // 3 entries * 2 (target + decoy)
+        [TestCase(@"DatabaseTests/UniProtMock/phi29_mock_reviewed.xml", true, 6)]   // 3 entries * 2 (target + decoy)
+        [TestCase(@"DatabaseTests/UniProtMock/phi29_mock_reviewed.fasta", false, 6)] // 3 entries * 2 (target + decoy)
         public static void LoadUniProtProteomeFromLocalFile_GeneratesTargetsAndDecoys(string relativePath, bool xmlFormat, int expectedCount)
         {
             var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, relativePath);
@@ -115,7 +115,7 @@ namespace Test.GuiTests
                     isoforms, xmlFormat, compressed);
 
                 var extension = (xmlFormat ? ".xml" : ".fasta") + (compressed ? ".gz" : "");
-                var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, $@"DatabaseTests\uniprot_canary{extension}");
+                var filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "DatabaseTests", $"uniprot_canary{extension}");
 
                 HttpClientHandler handler = new HttpClientHandler(); // without this, the download is very slow
                 handler.Proxy = null;
@@ -153,8 +153,8 @@ namespace Test.GuiTests
         public static void TestFileLoadingWithDuplicateFiles()
         {
             var metaDrawLogic = new MetaDrawLogic();
-            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\mouseOne.mzML"));
-            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\mouseOne.mzML"));
+            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "mouseOne.mzML"));
+            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "mouseOne.mzML"));
 
             var warnings = metaDrawLogic.LoadFiles(true, false);
             Assert.That(warnings.Count, Is.EqualTo(0));
@@ -165,7 +165,7 @@ namespace Test.GuiTests
         public static void TestFileLoadingTimsTof()
         {
             var metaDrawLogic = new MetaDrawLogic();
-            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\snippet.d"));
+            metaDrawLogic.SpectraFilePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "snippet.d"));
 
             var warnings = metaDrawLogic.LoadFiles(true, false);
             Assert.That(warnings.Count, Is.EqualTo(0));

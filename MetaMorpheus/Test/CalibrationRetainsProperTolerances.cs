@@ -28,8 +28,8 @@ namespace Test
             Directory.CreateDirectory(outputFolder);
 
             CalibrationTask calibrationTask = new();
-            string nonCalibratedFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string nonCalibratedFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
             // define expected values
             int expectedCalibrationCount = 2;

@@ -182,10 +182,10 @@ namespace Test
             var task = new SearchTask { CommonParameters = GuiPepBox };
             var spectraFiles = new List<string>
             {
-                Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML"),
-                Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip_2.mzML")
+                Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML"),
+                Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip_2.mzML")
             };
-            var databases = new List<DbForTask> { new DbForTask(Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta"), false) };
+            var databases = new List<DbForTask> { new DbForTask(Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta"), false) };
             var warnings = new List<string>();
             EventHandler<StringEventArgs> onWarn = (_, e) => warnings.Add(e.S);
 

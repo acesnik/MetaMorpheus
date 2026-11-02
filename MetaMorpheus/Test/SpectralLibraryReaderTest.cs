@@ -25,7 +25,7 @@ namespace Test
         [Test]
         public static void SpectralLibrarySearchTest()
         {
-            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch");
+            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch");
             var outputDir = Path.Combine(testDir, @"SpectralLibrarySearchTest");
 
             string library1 = Path.Combine(testDir, @"P16858_target.msp");
@@ -60,7 +60,7 @@ namespace Test
         [Test]
         public static void DaltonToleranceSpectralLibrarySearchTest()
         {
-            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch");
+            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch");
             var outputDir = Path.Combine(testDir, @"DaltonToleranceSpectralLibrarySearchTest");
 
             string library1 = Path.Combine(testDir, @"P16858_target.msp");
@@ -99,7 +99,7 @@ namespace Test
         [Test]
         public static void AnotherSpectralLibrarySearchTest()
         {
-            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch");
+            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch");
             string myFile = Path.Combine(testDir, @"slicedMouse.raw");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters commonParameters = new CommonParameters(maxThreadsToUsePerFile: 1, scoreCutoff: 1);
@@ -142,7 +142,7 @@ namespace Test
         [Test]
         public static void AnotherSpectralLibrarySearchTestDecoy()
         {
-            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch");
+            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch");
             string myFile = Path.Combine(testDir, @"slicedMouse.raw");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters commonParameters = new CommonParameters(maxThreadsToUsePerFile: 1, scoreCutoff: 1);
@@ -184,7 +184,7 @@ namespace Test
         [Test]
         public static void AnotherSpectralLibrarySearchTestDecoyNoLibrarySpectrum()
         {
-            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch");
+            var testDir = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch");
             string myFile = Path.Combine(testDir, @"slicedMouse.raw");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters commonParameters = new CommonParameters(maxThreadsToUsePerFile: 1, scoreCutoff: 1);
@@ -234,18 +234,18 @@ namespace Test
         [Test]
         public static void SpectralLibrarySearchWithNonSpecificSearchTest()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\NonSpecificSearchToml.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "NonSpecificSearchToml.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"SpectralLibraryNonSpecificSearchTest");
             Directory.CreateDirectory(outputFolder);
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\bosTaurusEnamPruned.xml");
-            string mySpectralLibrary = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\bosTaurusSpectralLibrary.msp");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "bosTaurusEnamPruned.xml");
+            string mySpectralLibrary = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "bosTaurusSpectralLibrary.msp");
 
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false), new DbForTask(mySpectralLibrary, false) }, outputFolder);
             engineToml.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
 
             // Verify the output file can be read without warnings
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);

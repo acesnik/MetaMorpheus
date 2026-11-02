@@ -261,12 +261,12 @@ namespace Test
             try
             {
                 var task = Nett.Toml.ReadFile<TaskLayer.GlycoSearchTask>(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\NGlycanSearchTaskconfig.toml"),
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "NGlycanSearchTaskconfig.toml"),
                     TaskLayer.MetaMorpheusTask.tomlConfig);
                 task._glycoSearchParameters.NGlycanDatabasefile = "NGlycan_Mine.gdb";
                 var db = new EngineLayer.DatabaseLoading.DbForTask(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\Q9C0Y4.fasta"), false);
-                string spectra = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\yeast_glycan_25170.mgf");
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "Q9C0Y4.fasta"), false);
+                string spectra = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "yeast_glycan_25170.mgf");
 
                 new TaskLayer.EverythingRunnerEngine(new List<(string, TaskLayer.MetaMorpheusTask)> { ("Task", task) },
                     new List<string> { spectra }, new List<EngineLayer.DatabaseLoading.DbForTask> { db }, outputFolder).Run();

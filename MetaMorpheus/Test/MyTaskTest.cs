@@ -138,19 +138,19 @@ namespace Test
         [Test]
         public static void TestModificationAnalysisEngine()
         {
-            var myGptmdTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ModificationAnalysis\GPTMDTaskconfig.toml");
+            var myGptmdTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ModificationAnalysis", "GPTMDTaskconfig.toml");
             var gptmdTaskLoaded = Toml.ReadFile<GptmdTask>(myGptmdTomlPath, MetaMorpheusTask.tomlConfig);
 
-            var mySearchTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ModificationAnalysis\SearchTaskconfig.toml");
+            var mySearchTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ModificationAnalysis", "SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(mySearchTomlPath, MetaMorpheusTask.tomlConfig);
 
             List<(string, MetaMorpheusTask)> taskList = new() {
                 ("gptmd", gptmdTaskLoaded),
                 ("search", searchTaskLoaded)};
 
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ModificationAnalysis\Results");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ModificationAnalysis\modificationAnalysis.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ModificationAnalysis\modificationAnalysis.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ModificationAnalysis", "Results");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ModificationAnalysis", "modificationAnalysis.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ModificationAnalysis", "modificationAnalysis.fasta");
 
             List<DbForTask> CurrentXmlDbFilenameList = new() { new DbForTask(myDatabase, false) };
 
@@ -780,14 +780,14 @@ namespace Test
 
             List<(string, MetaMorpheusTask)> taskList = new List<(string, MetaMorpheusTask)> { ("TestPepXmlOutput", search) };
 
-            string mzmlName = @"TestData\PrunedDbSpectra.mzml";
-            string fastaName = @"TestData\DbForPrunedDb.fasta";
+            string mzmlName = Path.Combine("TestData", "PrunedDbSpectra.mzml");
+            string fastaName = Path.Combine("TestData", "DbForPrunedDb.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPepXmlOutput");
 
             var engine = new EverythingRunnerEngine(taskList, new List<string> { mzmlName }, new List<DbForTask> { new DbForTask(fastaName, false) }, outputFolder);
             engine.Run();
 
-            string outputPepXmlPath = Path.Combine(outputFolder, @"TestPepXmlOutput\PrunedDbSpectra.pep.XML");
+            string outputPepXmlPath = Path.Combine(outputFolder, "TestPepXmlOutput", "PrunedDbSpectra.pep.XML");
             Assert.That(File.Exists(outputPepXmlPath));
             Directory.Delete(outputFolder, true);
         }
@@ -808,17 +808,17 @@ namespace Test
 
             List<(string, MetaMorpheusTask)> taskList = new List<(string, MetaMorpheusTask)> { ("ClassicSearch", classicSearch), ("ModernSearch", modernSearch) };
 
-            string mzmlName = @"TestData\PrunedDbSpectra.mzml";
-            string fastaName = @"TestData\DbForPrunedDb.fasta";
+            string mzmlName = Path.Combine("TestData", "PrunedDbSpectra.mzml");
+            string fastaName = Path.Combine("TestData", "DbForPrunedDb.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPepXmlOutput");
 
             var engine = new EverythingRunnerEngine(taskList, new List<string> { mzmlName }, new List<DbForTask> { new DbForTask(fastaName, false) }, outputFolder);
             engine.Run();
 
-            string classicPath = Path.Combine(outputFolder, @"ClassicSearch\AllPSMs.psmtsv");
+            string classicPath = Path.Combine(outputFolder, "ClassicSearch", "AllPSMs.psmtsv");
             var classicPsms = File.ReadAllLines(classicPath).ToList();
 
-            string modernPath = Path.Combine(outputFolder, @"ModernSearch\AllPSMs.psmtsv");
+            string modernPath = Path.Combine(outputFolder, "ModernSearch", "AllPSMs.psmtsv");
             var modernPsms = File.ReadAllLines(modernPath).ToList();
             counts.Add(modernPsms.Count);
 
@@ -833,7 +833,7 @@ namespace Test
         public static void CheckOpenFileTest()
         {
             var manager = new MyFileManager(true);
-            Assert.That(manager.SeeIfOpen(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\allResults.txt")) == false);
+            Assert.That(manager.SeeIfOpen(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "allResults.txt")) == false);
         }
 
         [Test]
@@ -844,8 +844,8 @@ namespace Test
 
             List<(string, MetaMorpheusTask)> taskList = new() { ("ClassicSearch", classicSearch)};
 
-            string mzmlName = @"TestData\PrunedDbSpectra.mzml";
-            string fastaName = @"TestData\SpectralLibrarySearch\P16858_target.msp";
+            string mzmlName = Path.Combine("TestData", "PrunedDbSpectra.mzml");
+            string fastaName = Path.Combine("TestData", "SpectralLibrarySearch", "P16858_target.msp");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMspNoXML");
 
             var engine = new EverythingRunnerEngine(taskList, new List<string> { mzmlName }, new List<DbForTask> { new DbForTask(fastaName, false) }, outputFolder);
@@ -954,14 +954,14 @@ namespace Test
                 Directory.Delete(outputFolder, true);
             Directory.CreateDirectory(outputFolder);
 
-            string fastaName = @"TestData\DbForPrunedDb_Reversed.fasta";
+            string fastaName = Path.Combine("TestData", "DbForPrunedDb_Reversed.fasta");
             var dbForTask = new List<DbForTask> { new DbForTask(fastaName, false) };
             List<string> spectraPaths =
             [
-                @"TestData\PrunedDbSpectra.mzml",
-                @"TestData\SmallCalibratible_Yeast.mzML",
-                @"TestData\TaGe_SA_A549_3_snip.mzML",
-                @"TestData\TaGe_SA_A549_3_snip_2.mzML"
+                Path.Combine("TestData", "PrunedDbSpectra.mzml"),
+                Path.Combine("TestData", "SmallCalibratible_Yeast.mzML"),
+                Path.Combine("TestData", "TaGe_SA_A549_3_snip.mzML"),
+                Path.Combine("TestData", "TaGe_SA_A549_3_snip_2.mzML")
             ];
 
             var commonParameters = new CommonParameters();

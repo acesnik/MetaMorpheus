@@ -79,12 +79,12 @@ namespace Test
         public static void TestGptmdEngineDissociationTypeAutodetect()
         {
             string origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory,
-                @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+                "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            //var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            //var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters cp = new CommonParameters(maxThreadsToUsePerFile: 1, digestionParams: new DigestionParams());
             var commonParameters = cp.CloneWithNewDissociationType(DissociationType.Autodetect);
@@ -97,7 +97,7 @@ namespace Test
             MassDiffAcceptor searchModes = new DotMassDiffAcceptor("", acceptableMassShifts, precursorMassTolerance);
             List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(myDatabase, true, DecoyType.Reverse, false, out var dbErrors, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
-            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, @"TestData\SmallCalibratible_Yeast.mzML", commonParameters).OrderBy(b => b.PrecursorMass).ToArray();
+            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, Path.Combine("TestData", "SmallCalibratible_Yeast.mzML"), commonParameters).OrderBy(b => b.PrecursorMass).ToArray();
             SpectralMatch[] allPsmsArray = new PeptideSpectralMatch[listOfSortedms2Scans.Length];
             new ClassicSearchEngine(allPsmsArray, listOfSortedms2Scans, variableModifications, fixedModifications, null, null, null,
                 proteinList, searchModes, commonParameters, fsp, null, new List<string>(), SearchParameters.WriteSpectralLibrary).Run();
@@ -120,7 +120,7 @@ namespace Test
                 }
             }
             
-            var engine = new GptmdEngine(nonNullPsms, reducedMods, new List<Tuple<double, double>>(), new Dictionary<string, Tolerance> { { @"TestData\SmallCalibratible_Yeast.mzML", precursorMassTolerance } }, commonParameters, fsp, new List<string>(), null);
+            var engine = new GptmdEngine(nonNullPsms, reducedMods, new List<Tuple<double, double>>(), new Dictionary<string, Tolerance> { { Path.Combine("TestData", "SmallCalibratible_Yeast.mzML"), precursorMassTolerance } }, commonParameters, fsp, new List<string>(), null);
             var res = (GptmdResults)engine.Run();
             Assert.That(8, Is.EqualTo(res.Mods.Count));
         }
@@ -380,8 +380,8 @@ namespace Test
                 Directory.Delete(outputFolder, true);
             Directory.CreateDirectory(outputFolder);
 
-            string mzmlName = @"TestData\PrunedDbSpectra.mzml";
-            string fastaName = @"TestData\DbForPrunedDb_Reversed.fasta";
+            string mzmlName = Path.Combine("TestData", "PrunedDbSpectra.mzml");
+            string fastaName = Path.Combine("TestData", "DbForPrunedDb_Reversed.fasta");
             var commonParameters = new CommonParameters();
             List<(string FileName, CommonParameters Parameters)> fileSpecificParameters = new() { (mzmlName, commonParameters) };
             var gptmdParams = new GptmdParameters

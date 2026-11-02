@@ -719,7 +719,7 @@ namespace Test
 
             // Set values within PEP_Analysis through reflection
             
-            PepAnalysisEngine pepEngine = new PepAnalysisEngine(new List<SpectralMatch>(firstCsmsFromListsOfCsms), "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            PepAnalysisEngine pepEngine = new PepAnalysisEngine(new List<SpectralMatch>(firstCsmsFromListsOfCsms), "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             var pepEngineProperties = pepEngine.GetType().GetProperties();
             foreach (var p in pepEngineProperties)
             {
@@ -968,8 +968,8 @@ namespace Test
         [Test]
         public static void DeadendPeptideTest()
         {
-            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSSO_ETchD6010.mgf");
-            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSSO_ETchD6010.mgf");
+            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestDeadendPeptide");
 
             XLSearchTask xLSearchTask = new XLSearchTask()
@@ -998,8 +998,8 @@ namespace Test
         [Test]
         public static void AmbiguiousDeadendPeptideTest() //The scan was previously identified as crosslink, but it is actually deadend
         {
-            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSSO_29061.mgf");
-            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSSO_29061.mgf");
+            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestDeadendPeptide");
 
             XLSearchTask xLSearchTask = new XLSearchTask() { };
@@ -1025,8 +1025,8 @@ namespace Test
             {
                 CommonParameters = new CommonParameters(trimMsMsPeaks: false)
             };
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSSO_ETchD6010.mgf");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSSO_ETchD6010.mgf");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestXLSearch");
             DbForTask db = new DbForTask(myDatabase, false);
             List<(string, MetaMorpheusTask)> taskList = new List<(string, MetaMorpheusTask)> { ("TestXLSearch", xlSearchTask) };
@@ -1307,7 +1307,7 @@ namespace Test
             WriteXlFile.WritePsmCrossToTsv(new List<CrosslinkSpectralMatch>(), "", 0);
 
             //sending the wrong writeType doesn't error. Method Simply breaks.
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\TestXLWrite");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "TestXLWrite");
             Directory.CreateDirectory(outputFolder);
             
             Ms2ScanWithSpecificMass scan = new(new MsDataScan(
@@ -1382,8 +1382,8 @@ namespace Test
                 CommonParameters = new CommonParameters(trimMsMsPeaks: false, addCompIons:false)
             };
 
-            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSSO_ETchD6010.mgf");
-            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSSO_ETchD6010.mgf");
+            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestXLSearch");
             DbForTask db = new DbForTask(myDatabaseXl, false);
 
@@ -1392,7 +1392,7 @@ namespace Test
             var engine = new EverythingRunnerEngine(taskList, new List<string> { myFileXl }, new List<DbForTask> { db }, outputFolder);
             engine.Run();
 
-            var results = Path.Combine(outputFolder, @"TestPercolator\XL_Intralinks_Percolator.txt");
+            var results = Path.Combine(outputFolder, "TestPercolator", "XL_Intralinks_Percolator.txt");
             var lines = File.ReadAllLines(results);
             Assert.That(lines[0].Equals("SpecId\tLabel\tScannr\tScore\tdScore\tCharge\tMass\tPPM\tLenShort\tLenLong\tLenSum\tPeptide\tProtein"));
 
@@ -1451,7 +1451,7 @@ namespace Test
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.CID, ms2childScanDissociationType: DissociationType.ETD,
                 trimMsMsPeaks: false);
 
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\ms2mixed_bsa_xlink.mzML");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "ms2mixed_bsa_xlink.mzML");
 
             var fsp = new List<(string, CommonParameters)>();
             fsp.Add((spectraFile, commonParameters));
@@ -1575,7 +1575,7 @@ namespace Test
             string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestMs2Ms3.tsv");
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.CID, ms3childScanDissociationType: DissociationType.LowCID, precursorMassTolerance: new PpmTolerance(10));
 
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\10226.mzML");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "10226.mzML");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
 
             var fsp = new List<(string, CommonParameters)>();

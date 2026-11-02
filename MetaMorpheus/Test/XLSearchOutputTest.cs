@@ -19,8 +19,8 @@ namespace Test
         public static void WriteTsvTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlOutputTestFile");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\RibosomeGO.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "RibosomeGO.fasta");
 
             Directory.CreateDirectory(outputFolder);
 
@@ -52,8 +52,8 @@ namespace Test
         public static void WriteXlSpectralLibraryTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlOutputTestFile");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\RibosomeGO.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "2017-11-21_XL_DSSO_Ribosome_RT60min_28800-28898.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "RibosomeGO.fasta");
 
             if (Directory.Exists(outputFolder)) Directory.Delete(outputFolder, true);
             Directory.CreateDirectory(outputFolder);

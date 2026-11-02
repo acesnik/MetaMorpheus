@@ -104,8 +104,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tempFolder },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 // This should not throw and should find the nested .d folder
@@ -162,8 +162,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tempFolder },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -215,8 +215,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tdfFilePath },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -268,8 +268,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tdfBinFilePath },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -319,8 +319,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tempFolder },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -369,8 +369,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { bafFilePath },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -421,8 +421,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { validDotD + Path.DirectorySeparatorChar },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") },
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") },
                     Verbosity = CommandLineSettings.VerbosityType.normal
                 };
 
@@ -474,8 +474,8 @@ namespace Test
                 var settings = new CommandLineSettings
                 {
                     _spectra = new[] { tempFolder },
-                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                    _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                    _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
                 };
 
                 settings.ValidateCommandLineSettings();
@@ -637,7 +637,7 @@ namespace Test
             var settings = new CommandLineSettings
             {
                 AcceptThermoLicence = true,
-                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") }
+                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") }
             };
 
             var exception = Assert.Throws<MetaMorpheusException>(() => settings.ValidateCommandLineSettings());
@@ -788,9 +788,9 @@ namespace Test
             var settings = new CommandLineSettings
             {
                 AcceptThermoLicence = true,
-                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") },
-                _spectra = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SpectralLibrarySearch\SmallCalibratible_Yeast.mzML") },
+                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") },
+                _spectra = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "SmallCalibratible_Yeast.mzML") },
                 OutputFolder = ScratchDataDirectory
             };
             settings.ValidateCommandLineSettings();
@@ -1131,9 +1131,9 @@ namespace Test
             var settings = new CommandLineSettings
             {
                 AuditSdrf = WriteChannelLevelSdrf(ScratchDataDirectory),
-                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") },
-                _spectra = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml") },
+                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") },
+                _spectra = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml") },
                 OutputFolder = ScratchDataDirectory
             };
 
@@ -1419,8 +1419,8 @@ namespace Test
             {
                 SdrfDesign = sdrf,
                 _spectra = new[] { data },
-                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
-                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta") },
+                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
+                _databases = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta") },
             };
 
             var thrown = Assert.Throws<MetaMorpheusException>(() => settings.ValidateCommandLineSettings());
@@ -1838,7 +1838,7 @@ namespace Test
                 SdrfTag = "TMT6",
                 SdrfPlexColumn = "comment[plex]",
                 _spectra = new[] { data },
-                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml") },
+                _tasks = new[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml") },
             };
 
             var thrown = Assert.Throws<MetaMorpheusException>(() => settings.ValidateCommandLineSettings());

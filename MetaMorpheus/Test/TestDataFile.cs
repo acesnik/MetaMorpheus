@@ -33,7 +33,7 @@ namespace Test
             List<double> mz1List = new List<double>();
             List<double> int1List = new List<double>();
 
-            string[] lines1 = System.IO.File.ReadAllLines(Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\LEEGPPVTTVLTR_ms1.txt"));
+            string[] lines1 = System.IO.File.ReadAllLines(Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, "TestData", "LEEGPPVTTVLTR_ms1.txt"));
 
             foreach (string line in lines1)
             {
@@ -45,7 +45,7 @@ namespace Test
             List<double> mz2List = new List<double>();
             List<double> int2List = new List<double>();
 
-            string[] lines2 = System.IO.File.ReadAllLines(Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, @"TestData\LEEGPPVTTVLTR_ms2.txt"));
+            string[] lines2 = System.IO.File.ReadAllLines(Path.Combine(NUnit.Framework.TestContext.CurrentContext.TestDirectory, "TestData", "LEEGPPVTTVLTR_ms2.txt"));
 
             foreach (string line in lines2)
             {

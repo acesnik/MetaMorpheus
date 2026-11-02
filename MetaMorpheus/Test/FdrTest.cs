@@ -175,7 +175,7 @@ namespace Test
         {
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters(digestionParams: new DigestionParams());
             SearchParameters SearchParameters = new SearchParameters();
@@ -184,9 +184,9 @@ namespace Test
 
             var myMsDataFile = myFileManager.LoadFile(origDataFile, CommonParameters);
             var searchModes = new SinglePpmAroundZeroSearchMode(5);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
-            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML", CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
+            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, Path.Combine("TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML"), CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
             SpectralMatch[] allPsmsArray = new PeptideSpectralMatch[listOfSortedms2Scans.Length];
             new ClassicSearchEngine(allPsmsArray, listOfSortedms2Scans, variableModifications, fixedModifications, null, null, null,
                 proteinList, searchModes, CommonParameters, fsp, null, new List<string>(), SearchParameters.WriteSpectralLibrary).Run();
@@ -236,7 +236,7 @@ namespace Test
             };
 
             // Set values within PEP_Analysis through reflection
-            PepAnalysisEngine pepEngine = new PepAnalysisEngine(nonNullPsms, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            PepAnalysisEngine pepEngine = new PepAnalysisEngine(nonNullPsms, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             var pepEngineProperties = pepEngine.GetType().GetProperties();
             foreach (var p in pepEngineProperties)
             {
@@ -275,7 +275,7 @@ namespace Test
             // scale, so the old `?? 0` turned "could not predict" into the maximum z-score, which the model reads
             // as strong evidence against the candidate. See PsmData.HasHydrophobicity.
             var unpredictableEngine = new PepAnalysisEngine(nonNullPsms, "standard", fsp,
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"), new NeverPredictsRetentionTime());
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"), new NeverPredictsRetentionTime());
             foreach (var p in unpredictableEngine.GetType().GetProperties())
             {
                 switch (p.Name)
@@ -349,7 +349,7 @@ namespace Test
             }
 
 
-            pepEngine = new PepAnalysisEngine(moreNonNullPSMs, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            pepEngine = new PepAnalysisEngine(moreNonNullPSMs, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             string metrics = pepEngine.ComputePEPValuesForAllPSMs();
             Assert.That(32 >= trueCount);
 
@@ -431,7 +431,7 @@ namespace Test
                 }
             }
 
-            pepEngine = new PepAnalysisEngine(moreNonNullPSMsCZE, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            pepEngine = new PepAnalysisEngine(moreNonNullPSMsCZE, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             metrics = pepEngine.ComputePEPValuesForAllPSMs();
             Assert.That(32 >= trueCount);
 
@@ -473,7 +473,7 @@ namespace Test
 
             //TEST PEP calculation failure
             psmCopyForPEPFailure.RemoveAll(x => x.IsDecoy);
-            pepEngine = new PepAnalysisEngine(psmCopyForPEPFailure, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            pepEngine = new PepAnalysisEngine(psmCopyForPEPFailure, "standard", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             string result = pepEngine.ComputePEPValuesForAllPSMs();
             Assert.That(result, Is.EqualTo("Posterior error probability analysis failed. This can occur for small data sets when some sample groups are missing positive or negative training examples."));
 
@@ -496,9 +496,9 @@ namespace Test
             {
                 var commonParameters = new CommonParameters(digestionParams: new DigestionParams());
                 fsp = new List<(string fileName, CommonParameters fileSpecificParameters)> { ("TaGe_SA_HeLa_04_subset_longestSeq.mzML", commonParameters) };
-                var dataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+                var dataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
                 var msDataFile = new MyFileManager(true).LoadFile(dataFile, commonParameters);
-                List<Protein> proteins = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out _,
+                List<Protein> proteins = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out _,
                     ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex, ProteinDbLoader.UniprotOrganismRegex, -1);
                 var scans = MetaMorpheusTask.GetMs2Scans(msDataFile, dataFile, commonParameters).OrderBy(b => b.PrecursorMass).ToArray();
                 SpectralMatch[] psmArray = new PeptideSpectralMatch[scans.Length];
@@ -515,7 +515,7 @@ namespace Test
                 new FdrAnalysisEngine(psms, 1, commonParameters, fsp, new List<string>()).Run();
                 return psms;
             }
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData");
 
             var keptPsms = Search(out var fsp);
             int hypothesesBefore = keptPsms.Sum(p => p.BestMatchingBioPolymersWithSetMods.Count());
@@ -640,11 +640,11 @@ namespace Test
 
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\HeLaFakeTopDown.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "HeLaFakeTopDown.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
 
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
 
             var fsp = new List<(string fileName, CommonParameters fileSpecificParameters)>();
             fsp.Add(("TaGe_SA_HeLa_04_subset_longestSeq.mzML", CommonParameters));
@@ -673,7 +673,7 @@ namespace Test
                 }
             }
 
-            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(moreNonNullPSMs.Where(p => p != null).OrderByDescending(f => f.Score).ToList(), 1, CommonParameters, fsp, new List<string>(), analysisType: "PSM", outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\")).Run());
+            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(moreNonNullPSMs.Where(p => p != null).OrderByDescending(f => f.Score).ToList(), 1, CommonParameters, fsp, new List<string>(), analysisType: "PSM", outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData")).Run());
 
             var maxScore = nonNullPsms.Select(n => n.Score).Max();
             SpectralMatch maxScorePsm = nonNullPsms.Where(n => n.Score == maxScore).First();
@@ -703,7 +703,7 @@ namespace Test
             };
 
             // Set values within PEP_Analysis through reflection
-            PepAnalysisEngine pepEngine = new PepAnalysisEngine(nonNullPsms, "top-down", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\"));
+            PepAnalysisEngine pepEngine = new PepAnalysisEngine(nonNullPsms, "top-down", fsp, Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData"));
             var pepEngineProperties = pepEngine.GetType().GetProperties();
             foreach (var p in pepEngineProperties)
             {
@@ -794,7 +794,7 @@ namespace Test
             //adding a new scan that creates a psm at an isolated retention time. This will ultimately cause PEP to replace its retention time standard deviation "Z-score" with the global average.
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters(digestionParams: new DigestionParams(), separationType: "HPLC");
 
@@ -803,10 +803,10 @@ namespace Test
 
             var myMsDataFile = myFileManager.LoadFile(origDataFile, CommonParameters);
             var searchModes = new SinglePpmAroundZeroSearchMode(5);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
-            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML", CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
+            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, Path.Combine("TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML"), CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
 
             Ms2ScanWithSpecificMass topMs2Scan = listOfSortedms2Scans[395];
             int newOneBasedScanNumber = 1000;
@@ -838,7 +838,7 @@ namespace Test
             psmBloated.AddRange(nonNullPsms.GetRange(2, arrayMax - 2));
             psmBloated.AddRange(nonNullPsms.GetRange(2, arrayMax - 2));
 
-            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(psmBloated.Where(p => p != null).ToList(), 1, CommonParameters, fsp, new List<string>(), outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\")).Run());
+            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(psmBloated.Where(p => p != null).ToList(), 1, CommonParameters, fsp, new List<string>(), outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData")).Run());
         }
 
         [Test]
@@ -848,7 +848,7 @@ namespace Test
 
             var variableModifications = new List<Modification>();
             var fixedModifications = new List<Modification>();
-            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML");
+            var origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             MyFileManager myFileManager = new MyFileManager(true);
             CommonParameters CommonParameters = new CommonParameters(digestionParams: new DigestionParams());
             var fsp = new List<(string fileName, CommonParameters fileSpecificParameters)>();
@@ -856,10 +856,10 @@ namespace Test
 
             var myMsDataFile = myFileManager.LoadFile(origDataFile, CommonParameters);
             var searchModes = new SinglePpmAroundZeroSearchMode(5);
-            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
+            List<Protein> proteinList = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"), true, DecoyType.Reverse, false, out var dbErrors,
                 ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotGeneNameRegex,
                     ProteinDbLoader.UniprotOrganismRegex, -1);
-            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, @"TestData\TaGe_SA_HeLa_04_subset_longestSeq.mzML", CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
+            var listOfSortedms2Scans = MetaMorpheusTask.GetMs2Scans(myMsDataFile, Path.Combine("TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML"), CommonParameters).OrderBy(b => b.PrecursorMass).ToArray();
 
             //adding a new scan that creates a psm at an isolated retention time. This will ultimately cause PEP to replace its retention time standard deviation "Z-score" with the global average.
             Ms2ScanWithSpecificMass topMs2Scan = listOfSortedms2Scans[395];
@@ -898,7 +898,7 @@ namespace Test
 
             psmBloated.Add(newPsmTwo);
 
-            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(psmBloated.Where(p => p != null).ToList(), 1, CommonParameters, fsp, new List<string>(), outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\")).Run());
+            FdrAnalysisResults fdrResultsClassicDelta = (FdrAnalysisResults)(new FdrAnalysisEngine(psmBloated.Where(p => p != null).ToList(), 1, CommonParameters, fsp, new List<string>(), outputFolder: Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData")).Run());
         }
 
         [Test]

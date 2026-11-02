@@ -427,8 +427,8 @@ namespace Test
             gptmdTask.CommonParameters.PrecursorMassMatchMode = PrecursorMassMatchMode.MostAbundant;
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestGptmdMostAbundant");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
             Directory.CreateDirectory(outputFolder);
 
             Assert.DoesNotThrow(() =>
@@ -444,7 +444,7 @@ namespace Test
         [Test]
         public static void GetMs2Scans_RecordsApexObservation_RegardlessOfSearchMode()
         {
-            string origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
+            string origDataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
             var fileManager = new MyFileManager(true);
 
             var monoParams = new CommonParameters(maxThreadsToUsePerFile: 1, doPrecursorDeconvolution: true,
@@ -1183,8 +1183,8 @@ namespace Test
                     precursorMassMatchMode: PrecursorMassMatchMode.MostAbundant,
                     doPrecursorDeconvolution: false);   // no envelope -> no observed apex on any scan
 
-                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
                 Directory.CreateDirectory(outputFolder);
 
                 searchTask.RunTask(outputFolder, new List<DbForTask> { new DbForTask(myDatabase, false) },
@@ -1255,8 +1255,8 @@ namespace Test
                 searchTask.CommonParameters = new CommonParameters(
                     precursorMassMatchMode: PrecursorMassMatchMode.MostAbundant);
 
-                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
                 Directory.CreateDirectory(outputFolder);
 
                 searchTask.RunTask(outputFolder, new List<DbForTask> { new DbForTask(myDatabase, false) },
@@ -1296,8 +1296,8 @@ namespace Test
                 searchTask.CommonParameters = new CommonParameters(
                     precursorMassMatchMode: PrecursorMassMatchMode.MostAbundant);
 
-                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+                string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+                string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
                 Directory.CreateDirectory(outputFolder);
 
                 searchTask.RunTask(outputFolder, new List<DbForTask> { new DbForTask(myDatabase, false) },

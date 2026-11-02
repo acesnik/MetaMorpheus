@@ -25,7 +25,7 @@ namespace Test.Transcriptomics
         public void TestNegativeModeClassicDeconvolution(double expectedMz, int expectedCharge, double expectedMonoMass)
         {
             // get scan
-            string filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Transcriptomics\TestData",
+            string filePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "Transcriptomics", "TestData",
                 "GUACUG_NegativeMode_Sliced.mzML");
             var dataFile = MsDataFileReader.GetDataFile(filePath);
             var scan = dataFile.GetAllScansList().First();

@@ -62,7 +62,7 @@ namespace Test
             Assert.That(allResults[25], Is.EqualTo("TaGe_SA_A549_3_snip_2 - Precursors: 535"));
             Assert.That(allResults[26], Is.EqualTo("TaGe_SA_A549_3_snip_2 - MS2 Scans: 147"));
 
-            string resultsFile = Path.Combine(outputFolder, @"postSearchAnalysisTaskTestOutput\results.txt");
+            string resultsFile = Path.Combine(outputFolder, "postSearchAnalysisTaskTestOutput", "results.txt");
             string[] results = File.ReadAllLines(resultsFile);
 
             Assert.That(results[5], Is.EqualTo("All target PSMs with q-value <= 0.01: 428"));
@@ -97,7 +97,7 @@ namespace Test
             EverythingRunnerEngineTestCase.TryGetTestCase(EverythingRunnerEngineTestCases.BottomUpQValueSingle, out var testCaseSingle);
             outputFolder = testCaseSingle.OutputDirectory;
 
-            resultsFile = Path.Combine(outputFolder, @"postSearchAnalysisTaskTestOutput\results.txt");
+            resultsFile = Path.Combine(outputFolder, "postSearchAnalysisTaskTestOutput", "results.txt");
             string[] singleFileResults = File.ReadAllLines(resultsFile);
             Assert.That(singleFileResults[5], Is.EqualTo("All target PSMs with q-value <= 0.01: " + TaGe_SA_A549_3_snip_2ExpectedPsms));
             Assert.That(singleFileResults[6], Is.EqualTo("All target peptides with q-value <= 0.01: " + TaGe_SA_A549_3_snip_2ExpectedPeptides));
@@ -135,7 +135,7 @@ namespace Test
             Assert.That(allResults[26], Is.EqualTo("TaGe_SA_A549_3_snip_2 - MS2 Scans: 147"));
 
 
-            var resultsFile = Path.Combine(outputFolder, @"postSearchAnalysisTaskTestOutput\results.txt");
+            var resultsFile = Path.Combine(outputFolder, "postSearchAnalysisTaskTestOutput", "results.txt");
             var results = File.ReadAllLines(resultsFile);
 
             Assert.That(results[5], Is.EqualTo("All target PSMs with pep q-value <= 0.01: 374"));
@@ -172,7 +172,7 @@ namespace Test
             Assert.That(allResults[16], Is.EqualTo("snippet - Target PSMs with q-value <= 0.01: 120"));
             Assert.That(allResults[22], Is.EqualTo("TaGe_SA_A549_3_snip - Target PSMs with q-value <= 0.01: 187"));
 
-            string resultsFile = Path.Combine(outputFolder, @"postSearchAnalysisTaskTestOutput\results.txt");
+            string resultsFile = Path.Combine(outputFolder, "postSearchAnalysisTaskTestOutput", "results.txt");
             string[] results = File.ReadAllLines(resultsFile);
 
             Assert.That(results[5], Is.EqualTo("All target PSMs with q-value <= 0.01: 143"));
@@ -198,13 +198,13 @@ namespace Test
         {
             EverythingRunnerEngineTestCase.TryGetTestCase(EverythingRunnerEngineTestCases.BottomUpPepQValue, out var testCase);
             string outputFolderPepQ = testCase.OutputDirectory;
-            var resultsFilePepQ = Path.Combine(outputFolderPepQ, @"postSearchAnalysisTaskTestOutput\results.txt");
+            var resultsFilePepQ = Path.Combine(outputFolderPepQ, "postSearchAnalysisTaskTestOutput", "results.txt");
             string[] resultsPepQ = File.ReadAllLines(resultsFilePepQ);
 
             //First test that AllResults and Results display correct numbers of peptides and psms with q-value filter on
             EverythingRunnerEngineTestCase.TryGetTestCase(EverythingRunnerEngineTestCases.BottomUpQValue, out testCase);
             string outputFolderQ = testCase.OutputDirectory;
-            string resultsFileQ = Path.Combine(outputFolderQ, @"postSearchAnalysisTaskTestOutput\results.txt");
+            string resultsFileQ = Path.Combine(outputFolderQ, "postSearchAnalysisTaskTestOutput", "results.txt");
             string[] resultsQ = File.ReadAllLines(resultsFileQ);
 
             // The Q-Value test case and the PEP-Q value test case represent the same data ran twice
@@ -1205,17 +1205,17 @@ namespace Test
         private static string RunTwoFileSearch(string outputFolder, bool writeIndividualFiles)
         {
             string testDirectory = TestContext.CurrentContext.TestDirectory;
-            var task = Nett.Toml.ReadFile<SearchTask>(Path.Combine(testDirectory, @"TestData\Task1-SearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var task = Nett.Toml.ReadFile<SearchTask>(Path.Combine(testDirectory, "TestData", "Task1-SearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             task.CommonParameters.QValueCutoffForPepCalculation = 0.01;
             task.SearchParameters.WriteIndividualFiles = writeIndividualFiles;
             task.SearchParameters.WriteMzId = true;
             task.SearchParameters.WritePrunedDatabase = true;
             var spectraFiles = new List<string>
             {
-                Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML"),
-                Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip_2.mzML")
+                Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML"),
+                Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip_2.mzML")
             };
-            var databases = new List<DbForTask> { new DbForTask(Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta"), false) };
+            var databases = new List<DbForTask> { new DbForTask(Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta"), false) };
 
             var qValueOverride = typeof(EngineLayer.FdrAnalysis.FdrAnalysisEngine).GetProperty("QvalueThresholdOverride");
             lock (EverythingRunnerEngineTestCase.myLock)
@@ -1269,10 +1269,10 @@ namespace Test
             Directory.CreateDirectory(root);
 
             string[] variantPeptides = { "EAEYEESVAK", "EWYQETHEK", "YEDQELTGK", "EHTAYYIK", "ALYEAGER", "LLEGEESR" };
-            string database = WriteDatabaseWithVariantPeptides(Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta"),
+            string database = WriteDatabaseWithVariantPeptides(Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta"),
                 variantPeptides, Path.Combine(root, "TaGe_SA_A549_3_snip_variants.xml"));
 
-            var task = Nett.Toml.ReadFile<SearchTask>(Path.Combine(testDirectory, @"TestData\Task1-SearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var task = Nett.Toml.ReadFile<SearchTask>(Path.Combine(testDirectory, "TestData", "Task1-SearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             task.CommonParameters.QValueCutoffForPepCalculation = 0.01;
             task.TaskChainContext = new TaskChainContext(); // as when a TruncationSearchTask follows the search
             double parentThreshold = new TruncationSearchParameters().ParentQValueThreshold;
@@ -1299,7 +1299,7 @@ namespace Test
                 {
                     qValueOverride.SetValue(null, true);
                     task.RunTask(output, new List<DbForTask> { new DbForTask(database, false) },
-                        new List<string> { Path.Combine(testDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML") }, "search");
+                        new List<string> { Path.Combine(testDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML") }, "search");
                 }
                 finally
                 {

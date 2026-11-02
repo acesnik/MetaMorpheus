@@ -70,7 +70,7 @@ namespace Test
         private static void RunTmtSearch(string stagedMzmlPath, string outputFolder, bool doParsimony = true)
         {
             var searchTask = Toml.ReadFile<SearchTask>(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\TMT-Task1-SearchTaskconfig.toml"),
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml"),
                 MetaMorpheusTask.tomlConfig);
 
             // The stock TMT toml leaves parsimony off, and multiplex quantification rolls up to protein
@@ -79,7 +79,7 @@ namespace Test
             searchTask.SearchParameters.DoParsimony = doParsimony;
 
             var taskList = new List<(string, MetaMorpheusTask)> { ("search", searchTask) };
-            string fasta = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\mouseTmt.fasta");
+            string fasta = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta");
 
             new EverythingRunnerEngine(
                 taskList,
@@ -96,7 +96,7 @@ namespace Test
         {
             Directory.CreateDirectory(dataFolder);
             string staged = Path.Combine(dataFolder, "VA084TQ_6.mzML");
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\VA084TQ_6.mzML"), staged);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML"), staged);
             return staged;
         }
 
@@ -312,7 +312,7 @@ namespace Test
 
             try
             {
-                string source = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\VA084TQ_6.mzML");
+                string source = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML");
                 var stagedNames = new[] { "TmtFileA", "TmtFileB" };
                 var stagedPaths = stagedNames.Select(name =>
                 {
@@ -330,7 +330,7 @@ namespace Test
                     new[] { TmtExperimentalDesign.Header }.Concat(rows));
 
                 var searchTask = Toml.ReadFile<SearchTask>(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\TMT-Task1-SearchTaskconfig.toml"),
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml"),
                     MetaMorpheusTask.tomlConfig);
                 searchTask.SearchParameters.DoParsimony = true;
                 searchTask.SearchParameters.WriteIndividualFiles = true;
@@ -340,7 +340,7 @@ namespace Test
                     stagedPaths,
                     new List<DbForTask>
                     {
-                        new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\mouseTmt.fasta"), false)
+                        new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta"), false)
                     },
                     outputFolder).Run();
 
@@ -1285,8 +1285,8 @@ namespace Test
                 {
                     SearchParameters = new SearchParameters { DoMultiplexQuantification = true, MultiplexModId = "NotAKit" }
                 };
-                string spectra = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-                string database = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+                string spectra = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+                string database = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
                 Assert.That(() => task.RunTask(folder, new List<DbForTask> { new DbForTask(database, false) }, new List<string> { spectra }, "unknownKit"),
                     Throws.InstanceOf<MetaMorpheusException>().With.Message.EqualTo("Could not find isobaric mass tag with the name NotAKit"));
@@ -1371,7 +1371,7 @@ namespace Test
             MetaMorpheusTask.WarnHandler += handler;
             try
             {
-                string source = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\VA084TQ_6.mzML");
+                string source = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML");
                 var fractions = new[] { ("TmtFracA", 1), ("TmtFracB", secondFraction) };
                 var stagedPaths = fractions.Select(f =>
                 {
@@ -1388,14 +1388,14 @@ namespace Test
                     new[] { TmtExperimentalDesign.Header }.Concat(rows));
 
                 var searchTask = Toml.ReadFile<SearchTask>(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\TMT-Task1-SearchTaskconfig.toml"),
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml"),
                     MetaMorpheusTask.tomlConfig);
                 searchTask.SearchParameters.DoParsimony = true;
 
                 new EverythingRunnerEngine(
                     new List<(string, MetaMorpheusTask)> { ("search", searchTask) },
                     stagedPaths,
-                    new List<DbForTask> { new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\mouseTmt.fasta"), false) },
+                    new List<DbForTask> { new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta"), false) },
                     outputFolder).Run();
 
                 string searchOut = Path.Combine(outputFolder, "search");

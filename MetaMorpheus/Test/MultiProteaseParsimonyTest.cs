@@ -773,8 +773,8 @@ namespace Test
                     SearchType = SearchType.Classic
                 }
             };
-            string mzmlName = @"TestData\PrunedDbSpectra.mzml";
-            string fastaName = @"TestData\DbForPrunedDb.fasta";
+            string mzmlName = Path.Combine("TestData", "PrunedDbSpectra.mzml");
+            string fastaName = Path.Combine("TestData", "DbForPrunedDb.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestPSMFdrFiltering_RealFileTest");
 
             var engine = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("TestPSMFdrFiltering_RealFile", Task1) }, new List<string> { mzmlName }, new List<DbForTask> { new DbForTask(fastaName, false) }, outputFolder);

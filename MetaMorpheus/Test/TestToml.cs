@@ -37,7 +37,7 @@ namespace Test
             File.Delete(tomlPath);
             Assert.That(glycoTaskLoaded._glycoSearchParameters.MaximumGlycanBoxMass, Is.EqualTo(2500.5));
 
-            var legacyTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\NGlycanSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var legacyTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "NGlycanSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             Assert.That(legacyTask._glycoSearchParameters.MaximumGlycanBoxMass, Is.EqualTo(GlycanBox.DefaultMaximumGlycanBoxMass));
         }
 
@@ -68,16 +68,16 @@ namespace Test
             Assert.That(searchTask.SearchParameters.CustomMdac, Is.EqualTo(searchTaskLoaded.SearchParameters.CustomMdac));
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestConsistency");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
             var engine = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Search", searchTask) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engine.Run();
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
 
-            var results = File.ReadAllLines(Path.Combine(outputFolder, @"Search\AllPSMs.psmtsv"));
-            var resultsToml = File.ReadAllLines(Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv"));
+            var results = File.ReadAllLines(Path.Combine(outputFolder, "Search", "AllPSMs.psmtsv"));
+            var resultsToml = File.ReadAllLines(Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv"));
             Assert.That(results.SequenceEqual(resultsToml));
 
             CalibrationTask calibrationTask = new();
@@ -97,16 +97,16 @@ namespace Test
             Toml.WriteFile(xLSearchTask, "XLSearchTask.toml", MetaMorpheusTask.tomlConfig);
             var xLSearchTaskLoaded = Toml.ReadFile<XLSearchTask>("XLSearchTask.toml", MetaMorpheusTask.tomlConfig);
 
-            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSSO_ETchD6010.mgf");
-            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta");
+            string myFileXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSSO_ETchD6010.mgf");
+            string myDatabaseXl = Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta");
 
             var xlEngine = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("XLSearch", xLSearchTask) }, new List<string> { myFileXl }, new List<DbForTask> { new DbForTask(myDatabaseXl, false) }, outputFolder);
             xlEngine.Run();
             var xlEngineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("XLSearchTOML", xLSearchTaskLoaded) }, new List<string> { myFileXl }, new List<DbForTask> { new DbForTask(myDatabaseXl, false) }, outputFolder);
             xlEngineToml.Run();
 
-            var xlResults = File.ReadAllLines(Path.Combine(outputFolder, @"XLSearch\XL_Intralinks.tsv"));
-            var xlResultsToml = File.ReadAllLines(Path.Combine(outputFolder, @"XLSearchTOML\XL_Intralinks.tsv"));
+            var xlResults = File.ReadAllLines(Path.Combine(outputFolder, "XLSearch", "XL_Intralinks.tsv"));
+            var xlResultsToml = File.ReadAllLines(Path.Combine(outputFolder, "XLSearchTOML", "XL_Intralinks.tsv"));
 
             SpectralAveragingTask averagingTask = new SpectralAveragingTask(new SpectralAveragingParameters()
                 { NumberOfScansToAverage = 15, BinSize = 2});
@@ -193,7 +193,7 @@ namespace Test
 
             //write the toml
             //let's use the datafile ok.mgf (arbitrary)
-            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ok.toml"), new string[] { "Protease = " + '"' + proteaseNotInDictionary + '"' });
+            File.WriteAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ok.toml"), new string[] { "Protease = " + '"' + proteaseNotInDictionary + '"' });
 
             //create a task with this, we want the run to work and just ignore the bad toml
             SearchTask task = new SearchTask();
@@ -201,8 +201,8 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"BadProteaseTest");
             Directory.CreateDirectory(outputFolder);
             task.RunTask(outputFolder, 
-                new List<DbForTask> { new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\okk.xml"), false) },
-                new List<string>{Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ok.mgf") },
+                new List<DbForTask> { new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "okk.xml"), false) },
+                new List<string>{Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ok.mgf") },
                 outputFolder);
 
             //Clear result files
@@ -227,10 +227,10 @@ namespace Test
                 CommonParameters = commonParameters
             };
 
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
             string folderPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestNormalizationExperDesign");
-            string experimentalDesignFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\ExperimentalDesign.tsv");
+            string experimentalDesignFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "ExperimentalDesign.tsv");
             using (StreamWriter output = new StreamWriter(experimentalDesignFile))
             {
                 output.WriteLine("FileName\tCondition\tBiorep\tFraction\tTechrep");
@@ -316,8 +316,8 @@ namespace Test
         [Test]
         public static void TestFileSpecificDeconvolutionParams()
         {
-            string sourceMzml = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
-            string sourceDb = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta");
+            string sourceMzml = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
+            string sourceDb = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta");
 
             string tempDirClassicToml = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TempDeconClassic_Toml");
             string tempDirClassicDirect = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TempDeconClassic_Direct");
@@ -388,8 +388,8 @@ namespace Test
                     outputDir);
                 engineClassicFromToml.Run();
 
-                var resultsClassicD = File.ReadAllLines(Path.Combine(outputDir, @"ClassicDirect\AllPSMs.psmtsv"));
-                var resultsClassicT = File.ReadAllLines(Path.Combine(outputDir, @"ClassicFromToml\AllPSMs.psmtsv"));
+                var resultsClassicD = File.ReadAllLines(Path.Combine(outputDir, "ClassicDirect", "AllPSMs.psmtsv"));
+                var resultsClassicT = File.ReadAllLines(Path.Combine(outputDir, "ClassicFromToml", "AllPSMs.psmtsv"));
                 Assert.That(resultsClassicT.SequenceEqual(resultsClassicD),
                     "Classic deconv results: file-specific TOML approach should match direct approach");
 
@@ -423,8 +423,8 @@ namespace Test
                     outputDir);
                 engineIsoDecFromToml.Run();
 
-                var resultsIsoDecD = File.ReadAllLines(Path.Combine(outputDir, @"IsoDecDirect\AllPSMs.psmtsv"));
-                var resultsIsoDecT = File.ReadAllLines(Path.Combine(outputDir, @"IsoDecFromToml\AllPSMs.psmtsv"));
+                var resultsIsoDecD = File.ReadAllLines(Path.Combine(outputDir, "IsoDecDirect", "AllPSMs.psmtsv"));
+                var resultsIsoDecT = File.ReadAllLines(Path.Combine(outputDir, "IsoDecFromToml", "AllPSMs.psmtsv"));
                 Assert.That(resultsIsoDecT.SequenceEqual(resultsIsoDecD),
                     "IsoDec deconv results: file-specific TOML approach should match direct approach");
             }

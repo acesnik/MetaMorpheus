@@ -93,8 +93,8 @@ namespace Test
         public static void ClassicSearch_HasNoPepRuleYet()
         {
             var runs = FdrAndDisambiguationRuns(SearchTaskOf(SearchType.Classic),
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"),
-                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml") });
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"),
+                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml") });
 
             Assert.That(runs.Where(r => !r.IsFdr), Is.Not.Empty, "no DisambiguationEngine ran");
             Assert.That(runs.Where(r => !r.IsFdr).Select(r => r.PepFlag), Is.All.False);
@@ -104,8 +104,8 @@ namespace Test
         public static void NonspecificSearch_DisambiguatesByPep()
         {
             var runs = FdrAndDisambiguationRuns(SearchTaskOf(SearchType.NonSpecific),
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"),
-                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml") });
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"),
+                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml") });
 
             AssertEveryPepRunIsDisambiguatedByPep(runs);
         }
@@ -116,8 +116,8 @@ namespace Test
             var task = new XLSearchTask();
             task.XlSearchParameters.Crosslinker = GlobalVariables.Crosslinkers.ToList()[1];
             var runs = FdrAndDisambiguationRuns(task,
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA.fasta"),
-                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, @"XlTestData\BSA_DSS_23747.mzML") });
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA.fasta"),
+                new List<string> { Path.Combine(TestContext.CurrentContext.TestDirectory, "XlTestData", "BSA_DSS_23747.mzML") });
 
             // crosslinks, singles, and the single / loop / deadend passes: all train PEP
             Assert.That(runs.Count(r => r.IsFdr), Is.EqualTo(5));
@@ -127,7 +127,7 @@ namespace Test
         [Test]
         public static void GlycoSearch_DisambiguatesByPep()
         {
-            string dataFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific");
+            string dataFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific");
             var task = new GlycoSearchTask
             {
                 CommonParameters = new CommonParameters(dissociationType: DissociationType.HCD, ms2childScanDissociationType: DissociationType.EThcD),

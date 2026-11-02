@@ -87,14 +87,14 @@ namespace Test.MetaDraw
             var viewModel = new FragmentationReanalysisViewModel();
 
             // run a quick search 
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestConsistency");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestConsistency");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
             var dataFile = MsDataFileReader.GetDataFile(myFile);
 
             // parse out psm and its respective scan
@@ -160,14 +160,14 @@ namespace Test.MetaDraw
             var viewModel = new FragmentationReanalysisViewModel();
 
             // run a quick search
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestToleranceUnit");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TaGe_SA_A549_3_snip.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestToleranceUnit");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
             var dataFile = MsDataFileReader.GetDataFile(myFile);
 
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);
@@ -231,12 +231,12 @@ namespace Test.MetaDraw
                     digestionParams: new RnaDigestionParams()
                 ),
             };
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestRefragmentRNA");
-            var myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Transcriptomics\TestData\GUACUG_NegativeMode_Sliced.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"Transcriptomics\TestData\6mer.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestRefragmentRNA");
+            var myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "Transcriptomics", "TestData", "GUACUG_NegativeMode_Sliced.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "Transcriptomics", "TestData", "6mer.fasta");
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllOSMs.osmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllOSMs.osmtsv");
             var dataFile = MsDataFileReader.GetDataFile(myFile);
 
             // parse out psm and its respective scan
@@ -266,11 +266,11 @@ namespace Test.MetaDraw
         [Test]
         public static void TestFragmentationReanalysisViewModel_DiagnosticIons()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_Test\TMT-Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "TMT-Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\TestRefragmentDiagnosticIons");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_Test\VA084TQ_6.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_Test\mouseTmt.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestRefragmentDiagnosticIons");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "VA084TQ_6.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "mouseTmt.fasta");
 
             var engineToml = new EverythingRunnerEngine(
                 new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) },
@@ -279,7 +279,7 @@ namespace Test.MetaDraw
                 outputFolder);
             engineToml.Run();
 
-            string psmFile = Path.Combine(outputFolder, @"SearchTOML\AllPSMs.psmtsv");
+            string psmFile = Path.Combine(outputFolder, "SearchTOML", "AllPSMs.psmtsv");
             var dataFile = MsDataFileReader.GetDataFile(myFile);
 
             List<PsmFromTsv> parsedPsms = SpectrumMatchTsvReader.ReadPsmTsv(psmFile, out var warnings);

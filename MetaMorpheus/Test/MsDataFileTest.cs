@@ -26,8 +26,8 @@ namespace Test
         /// also guards against regressions in mzLib's profile-mode filtering path.
         /// </summary>
         [Test]
-        [TestCase(@"TestData\centroid_1x_MS1_4x_autoMS2.d", true, 721.86865)]
-        [TestCase(@"TestData\profile_1x_MS1_4x_autoMS2.d", false, 716.58715)]
+        [TestCase(@"TestData/centroid_1x_MS1_4x_autoMS2.d", true, 721.86865)]
+        [TestCase(@"TestData/profile_1x_MS1_4x_autoMS2.d", false, 716.58715)]
         public static void TestBrukerTofFileLoadsThroughMyFileManager(string relativePath, bool expectCentroid, double expectedPrecursorMz)
         {
             string dotDPath = Path.Combine(TestContext.CurrentContext.TestDirectory, relativePath);
@@ -46,10 +46,10 @@ namespace Test
         }
 
         [Test]
-        [TestCase(@"TestData\ok.mgf", @"TestData\okk.xml")]
-        [TestCase(@"TestData\snippet.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TestData\centroid_1x_MS1_4x_autoMS2.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TopDownTestData\JurkatTopDownRep2Fract1_ms2.msalign", @"TestData\gapdh.fasta")]
+        [TestCase(@"TestData/ok.mgf", @"TestData/okk.xml")]
+        [TestCase(@"TestData/snippet.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TestData/centroid_1x_MS1_4x_autoMS2.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TopDownTestData/JurkatTopDownRep2Fract1_ms2.msalign", @"TestData/gapdh.fasta")]
         public static void TestQuantificationDoesntCrashOnUnsupportedFiles(string filepath, string dbPath)
         {
             //The purpose of this test is to ensure that mgfs and timsTOF (.d) files can be run without crashing.
@@ -79,10 +79,10 @@ namespace Test
         }
 
         [Test]
-        [TestCase(@"TestData\ok.mgf", @"TestData\okk.xml")]
-        [TestCase(@"TestData\snippet.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TestData\centroid_1x_MS1_4x_autoMS2.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TopDownTestData\JurkatTopDownRep2Fract1_ms2.msalign", @"TestData\gapdh.fasta")]
+        [TestCase(@"TestData/ok.mgf", @"TestData/okk.xml")]
+        [TestCase(@"TestData/snippet.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TestData/centroid_1x_MS1_4x_autoMS2.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TopDownTestData/JurkatTopDownRep2Fract1_ms2.msalign", @"TestData/gapdh.fasta")]
         public static void TestCalibrationDoesntCrashOnUnsupportedFiles(string filepath, string dbPath)
         {
             //The purpose of this test is to ensure that mgfs and timsTOF (.d) files can be run without crashing.
@@ -114,10 +114,10 @@ namespace Test
         }
 
         [Test]
-        [TestCase(@"TestData\ok.mgf", @"TestData\okk.xml")]
-        [TestCase(@"TestData\snippet.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TestData\centroid_1x_MS1_4x_autoMS2.d", @"TestData\gapdh.fasta")]
-        [TestCase(@"TopDownTestData\JurkatTopDownRep2Fract1_ms2.msalign", @"TestData\gapdh.fasta")]
+        [TestCase(@"TestData/ok.mgf", @"TestData/okk.xml")]
+        [TestCase(@"TestData/snippet.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TestData/centroid_1x_MS1_4x_autoMS2.d", @"TestData/gapdh.fasta")]
+        [TestCase(@"TopDownTestData/JurkatTopDownRep2Fract1_ms2.msalign", @"TestData/gapdh.fasta")]
         public static void TestAveragingDoesntCrashOnUnsupportedFiles(string filepath, string dbPath)
         {
             //The purpose of this test is to ensure that mgfs and timsTOF (.d) files can be run without crashing.
@@ -196,7 +196,7 @@ namespace Test
         {
             // The TestData folder contains snippet.d which is a timsTOF data folder
             string testDataFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData");
-            string dbPath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\gapdh.fasta");
+            string dbPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "gapdh.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestDotDFolderRegression");
 
             // Verify the .d folder exists in the test data

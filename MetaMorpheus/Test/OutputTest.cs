@@ -168,13 +168,13 @@ namespace Test
         [Test]
         public static void TestOpairFileOutput()
         {
-            var task = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var task = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
 
             string currentDirectory = Path.Combine(Environment.CurrentDirectory, @"TESTGlycoData");
 
             Directory.CreateDirectory(currentDirectory);
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", task) }, new List<string> { spectraFile }, new List<DbForTask> { db }, currentDirectory).Run();
 
             string outputDirectory = Path.Combine(currentDirectory, @"Task");

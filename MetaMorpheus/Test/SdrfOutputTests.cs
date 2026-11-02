@@ -283,7 +283,7 @@ namespace Test
             if (Directory.Exists(folder)) Directory.Delete(folder, true);
             Directory.CreateDirectory(folder);
 
-            string source = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
+            string source = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
             string taskLevelFile = Path.Combine(folder, "tryptic.mzml");
             string overriddenFile = Path.Combine(folder, "aspN.mzml");
             File.Copy(source, taskLevelFile, true);
@@ -294,7 +294,7 @@ namespace Test
             File.WriteAllLines(Path.Combine(folder, "aspN.toml"), new[] { "Protease = \"Asp-N\"" });
 
             var database = new DbForTask(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"), false);
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"), false);
 
             ExperimentalDesign.WriteExperimentalDesignToFile(new List<SpectraFileInfo>
             {
@@ -1428,7 +1428,7 @@ namespace Test
             Directory.CreateDirectory(dataFolder);
 
             string mzml = Path.Combine(dataFolder, "VA084TQ_6.mzML");
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\VA084TQ_6.mzML"), mzml);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML"), mzml);
 
             if (writeDesign)
             {
@@ -1451,14 +1451,14 @@ namespace Test
             }
 
             var searchTask = Toml.ReadFile<SearchTask>(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\TMT-Task1-SearchTaskconfig.toml"),
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml"),
                 MetaMorpheusTask.tomlConfig);
             searchTask.SearchParameters.WriteSdrf = true;
             searchTask.SearchParameters.DoParsimony = true;
 
             output = Path.Combine(root, "out");
             Directory.CreateDirectory(output);
-            string fasta = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TMT_test\mouseTmt.fasta");
+            string fasta = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta");
 
             var captured = new List<string>();
             EventHandler<StringEventArgs> handler = (o, e) => captured.Add(e.S);
@@ -1729,12 +1729,12 @@ namespace Test
             if (Directory.Exists(folder)) Directory.Delete(folder, true);
             Directory.CreateDirectory(folder);
 
-            string spectraSource = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml");
+            string spectraSource = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml");
             spectraPath = Path.Combine(folder, "PrunedDbSpectra.mzml");
             File.Copy(spectraSource, spectraPath, true);
 
             database = new DbForTask(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"), false);
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"), false);
 
             return folder;
         }

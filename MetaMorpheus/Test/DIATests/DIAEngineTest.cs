@@ -36,7 +36,7 @@ namespace Test.DIATests
         public static void DIAScanWindowMapTest()
         {
             //This is a snip file from one of the published DIA datasets; the snip file has 34 different precursor isolation windows, each containing 3 MS2 scans
-            string dataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData\\DIA\\18300_REP2_500ng_HumanLysate_SWATH_1_RT25.63-25.81.mzML");
+            string dataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DIA", "18300_REP2_500ng_HumanLysate_SWATH_1_RT25.63-25.81.mzML");
             var myFileManager = new MyFileManager(true);
             var dataFile = myFileManager.LoadFile(dataPath, new CommonParameters());
             var allMs2Scans = dataFile.GetAllScansList().Where(s => s.MsnOrder == 2).ToArray();
@@ -319,7 +319,7 @@ namespace Test.DIATests
         [Test]
         public static void IsdVoltageScanTest()
         {
-            string dataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData\\DIA\\08-12-24_PEPPI_FractionD_orbiMS1_ISD60-80-100_RT8.1-9.23.mzML");
+            string dataPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DIA", "08-12-24_PEPPI_FractionD_orbiMS1_ISD60-80-100_RT8.1-9.23.mzML");
             var myFileManager = new MyFileManager(true);
             var dataFile = myFileManager.LoadFile(dataPath, new CommonParameters());
             var allScans = dataFile.GetAllScansList().ToArray();

@@ -65,7 +65,7 @@ namespace Test
             Assert.That(modPos.Count, Is.EqualTo(1), "Test peptide should offer exactly one candidate site.");
 
             var commonParameters = new CommonParameters(dissociationType: DissociationType.ETD, trimMsMsPeaks: false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scan = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).First();
 
@@ -117,7 +117,7 @@ namespace Test
             }
 
             //For N-glycan
-            var structDataBasePath_NGlycan = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\NGlycan_struct.gdb");
+            var structDataBasePath_NGlycan = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "NGlycan_struct.gdb");
             var structGlycans_NGlycan = GlycanDatabase.LoadGlycan(structDataBasePath_NGlycan, true, false).ToList();
             Assert.That(structGlycans_NGlycan.Count() == 24); // The number of glycans in the database is 24. (12*2 by by two motifs (Nxs, Nxt))
             // Assert that the GlyId starts from 1 to 24
@@ -179,10 +179,10 @@ namespace Test
             string outputFolder_NSearch = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder_NSearch);
 
-            var glycoSearchTask_NSearch = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigNGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask_NSearch = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigNGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask_NSearch) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder_NSearch).Run();
 
             Directory.Delete(outputFolder_NSearch, true);
@@ -190,14 +190,14 @@ namespace Test
             string outputFolder_NOSearch = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder_NOSearch);
 
-            var glycoSearchTask_NOSearch = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigN_OGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask_NOSearch = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigN_OGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
             
             // we use a smaller N-glycan database for this testing. Because using the full database will make the test tooooo long (over 10000000 NOBoxes will be created and their childBoxes).
             glycoSearchTask_NOSearch._glycoSearchParameters.NGlycanDatabasefile = "NGlycan_ForNoSearch.gdb"; 
             GlobalVariables.NGlycanDatabasePaths.Add(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", @"NGlycan_ForNoSearch.gdb"));
             glycoSearchTask_NOSearch._glycoSearchParameters.MaximumOGlycanAllowed = 2; // In order to reduce the search space, set the max O-glycan number to 2.
 
-            string spectraFile_NOSearch = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            string spectraFile_NOSearch = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask_NOSearch) }, new List<string> { spectraFile_NOSearch }, new List<DbForTask> { db }, outputFolder_NOSearch).Run();
 
             Directory.Delete(outputFolder_NOSearch, true);
@@ -210,15 +210,15 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\Glyco_Isobaric_testing.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "Glyco_Isobaric_testing.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.DoParsimony = false;
             glycoSearchTask._glycoSearchParameters.DoQuantification = true;
             glycoSearchTask._glycoSearchParameters.OxoniumIonFilt = false; //turn off the diagnostic filter
 
-            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoProteinFASTA_7proteins.fasta"), false);
-            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P13987_contaminant.fasta"), true);
+            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoProteinFASTA_7proteins.fasta"), false);
+            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P13987_contaminant.fasta"), true);
 
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoPepMix_snip.mzML");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoPepMix_snip.mzML");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { targetDbForTask, contaminDbForTask }, outputFolder).Run();
             
             string oGlycoPath = Path.Combine(outputFolder, "Task", "oglyco.psmtsv");            
@@ -372,7 +372,7 @@ namespace Test
 
             //Get Scan
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.EThcD, trimMsMsPeaks: false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scan = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).First();
 
@@ -483,7 +483,7 @@ namespace Test
 
             //Get scan
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.EThcD, trimMsMsPeaks:false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scans = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).ToArray();
 
@@ -538,7 +538,7 @@ namespace Test
 
             //Load scan.
             CommonParameters commonParameters = new CommonParameters(dissociationType: DissociationType.ETD, trimMsMsPeaks: false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scans = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).ToArray();
 
@@ -599,10 +599,10 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder).Run();
 
             Directory.Delete(outputFolder, true);
@@ -614,10 +614,10 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run2.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run2.toml"), MetaMorpheusTask.tomlConfig);
 
-            DbForTask db = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P02649.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
+            DbForTask db = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P02649.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder).Run();
             Directory.Delete(Path.Combine(Environment.CurrentDirectory, @"TESTGlycoData"), true);
         }
@@ -629,10 +629,10 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150withHyphenInName.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150withHyphenInName.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder).Run();
 
             var folders = Directory.GetDirectories(outputFolder).Select(b => Path.GetFileName(b)).ToList();
@@ -649,12 +649,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.WriteContaminants = false;
 
-            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoProteinFASTA_7proteins.fasta"), false);
-            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P13987_contaminant.fasta"), true);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoPepMix_snip.mzML");
+            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoProteinFASTA_7proteins.fasta"), false);
+            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P13987_contaminant.fasta"), true);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoPepMix_snip.mzML");
             new EverythingRunnerEngine(
                 new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) },
                 new List<string> { spectraFile },
@@ -729,12 +729,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.WriteContaminants = true; // write contaminants to the output folder
 
-            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoProteinFASTA_7proteins.fasta"), false);
-            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P13987_contaminant.fasta"), true);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoPepMix_snip.mzML");
+            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoProteinFASTA_7proteins.fasta"), false);
+            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P13987_contaminant.fasta"), true);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoPepMix_snip.mzML");
             new EverythingRunnerEngine(
                 new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) },
                 new List<string> { spectraFile },
@@ -811,7 +811,7 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.WriteContaminants = true;
             glycoSearchTask._glycoSearchParameters.WriteDecoys = true;
             glycoSearchTask._glycoSearchParameters.DecoyType = DecoyType.Reverse;
@@ -819,14 +819,14 @@ namespace Test
                 precursorMassTolerance: new PpmTolerance(6), productMassTolerance: new PpmTolerance(10), qValueThreshold: 1, 
                 pepQValueThreshold: 1, scoreCutoff: 1);
 
-            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoProteinFASTA_7proteins.fasta"), false);
-            DbForTask dbContaminant = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P02649.fasta"), true);
+            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoProteinFASTA_7proteins.fasta"), false);
+            DbForTask dbContaminant = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P02649.fasta"), true);
 
             List<string> copiedSpectraFiles = new();
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoPepMix_snip.mzML"); // in order to get enough PSMs to test the filtering, we will copy the spectra file 19 times then get one decpys PSMs in the filterPSMs (Fdr <= 0.01, 1 decoys out of 200 target)
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoPepMix_snip.mzML"); // in order to get enough PSMs to test the filtering, we will copy the spectra file 19 times then get one decpys PSMs in the filterPSMs (Fdr <= 0.01, 1 decoys out of 200 target)
             for(int i = 0; i < 19 ; i++)                    
             {
-                var copyPath = Path.Combine(TestContext.CurrentContext.TestDirectory, $@"GlycoTestData\Copy{i}GlycoPepMix_snip.mzML");
+                var copyPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", $"Copy{i}GlycoPepMix_snip.mzML");
                 if (!File.Exists(copyPath))
                     File.Copy(spectraFile, copyPath);
                 copiedSpectraFiles.Add(copyPath);
@@ -909,13 +909,13 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSnip.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.DoParsimony = false;
             glycoSearchTask._glycoSearchParameters.DoQuantification = true;
 
-            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoProteinFASTA_7proteins.fasta"), false);
-            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P13987_contaminant.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoPepMix_snip.mzML");
+            DbForTask targetDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoProteinFASTA_7proteins.fasta"), false);
+            DbForTask contaminDbForTask = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P13987_contaminant.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoPepMix_snip.mzML");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { targetDbForTask, contaminDbForTask }, outputFolder).Run();
 
             Directory.Delete(outputFolder, true);
@@ -927,13 +927,13 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
 
-            DbForTask dbTarget = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFileTarget = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask dbTarget = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFileTarget = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
 
-            DbForTask dbContaminant = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P02649.fasta"), true);
-            string spectraFileContaminant = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
+            DbForTask dbContaminant = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P02649.fasta"), true);
+            string spectraFileContaminant = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "181217_Fusion_(LC2)_NewObj_Serum_deSA_Jacalin_HRM_4h_ETD_HCD_DDA_mz(400_1200)_21707.mgf");
 
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFileTarget, spectraFileContaminant }, new List<DbForTask> { dbTarget, dbContaminant }, outputFolder).Run();
 
@@ -946,12 +946,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.Normalize = true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML"), Path.Combine(outputFolder, "171025_06subset_1.mzML"), true);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML"), Path.Combine(outputFolder, "171025_06subset_1.mzML"), true);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
 
             string spectraFile1 = Path.Combine(outputFolder, "171025_06subset_1.mzML");
             string spectraFile2 = Path.Combine(outputFolder, "171025_06subset_2.mzML");
@@ -1107,8 +1107,8 @@ namespace Test
         public static void OGlycoTest_ProteinInference(bool writeContaminants, bool writeDecoys, bool isContaminant, bool addProteinOutput)
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific\\FourMucins_NoSigPeps_FASTA.fasta");
-            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific", "FourMucins_NoSigPeps_FASTA.fasta");
+            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific");
             List<string> rawFilePaths = Directory.GetFiles(spectraFileDirctory).Where(p => p.Contains("mzML")).ToList();
 
             // run task
@@ -1164,8 +1164,8 @@ namespace Test
         public static void GlycoSearchIndividualFileFolderOutputTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific\\FourMucins_NoSigPeps_FASTA.fasta");
-            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific", "FourMucins_NoSigPeps_FASTA.fasta");
+            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific");
             List<string> rawFilePaths = Directory.GetFiles(spectraFileDirctory).Where(p => p.Contains("mzML")).ToList();
 
             // run task
@@ -1238,8 +1238,8 @@ namespace Test
         public static void GlycoSearchProteinGroupsListTheirPeptides()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoPeptideCells");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific\FourMucins_NoSigPeps_FASTA.fasta");
-            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific", "FourMucins_NoSigPeps_FASTA.fasta");
+            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific");
             List<string> rawFilePaths = Directory.GetFiles(spectraFileDirctory).Where(p => p.Contains("mzML")).ToList();
 
             var glycoSearchTask = new GlycoSearchTask()
@@ -1298,8 +1298,8 @@ namespace Test
         public static void N_GlycoSearchIndividualFileFolderOutputTest()
         {
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
-            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific\\FourMucins_NoSigPeps_FASTA.fasta");
-            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\N_O_glycoWithFileSpecific");
+            string proteinDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific", "FourMucins_NoSigPeps_FASTA.fasta");
+            string spectraFileDirctory = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "N_O_glycoWithFileSpecific");
             List<string> rawFilePaths = Directory.GetFiles(spectraFileDirctory).Where(p => p.Contains("mzML")).ToList();
 
             // run task
@@ -1376,12 +1376,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.Normalize = true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML");
-            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML");
+            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML");
 
             List<SpectraFileInfo> spectraFiles = new List<SpectraFileInfo>();
 
@@ -1390,7 +1390,7 @@ namespace Test
 
             ExperimentalDesign.WriteExperimentalDesignToFile(spectraFiles);
 
-            string experimentalDesignFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\ExperimentalDesign.tsv");
+            string experimentalDesignFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "ExperimentalDesign.tsv");
 
             var readIn = ExperimentalDesign.ReadExperimentalDesign(
                 experimentalDesignFilePath,
@@ -1453,12 +1453,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.DoParsimony = false;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML");
-            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML");
+            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML");
 
             List<SpectraFileInfo> spectraFiles = new List<SpectraFileInfo>();
 
@@ -1467,7 +1467,7 @@ namespace Test
 
             ExperimentalDesign.WriteExperimentalDesignToFile(spectraFiles);
 
-            string experimentalDesignFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\ExperimentalDesign.tsv");
+            string experimentalDesignFilePath = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "ExperimentalDesign.tsv");
 
             var readIn = ExperimentalDesign.ReadExperimentalDesign(
                 experimentalDesignFilePath,
@@ -1523,12 +1523,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.Normalize = true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML"), Path.Combine(outputFolder,"171025_06subset_1.mzML"), true);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML"), Path.Combine(outputFolder,"171025_06subset_1.mzML"), true);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
 
 
             string spectraFile1 = Path.Combine(outputFolder, "171025_06subset_1.mzML");
@@ -1608,12 +1608,12 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.Normalize = true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML"), Path.Combine(outputFolder, "171025_06subset_1.mzML"), true);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML"), Path.Combine(outputFolder, "171025_06subset_1.mzML"), true);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML"), Path.Combine(outputFolder, "171025_06subset_2.mzML"), true);
 
 
             string spectraFile1 = Path.Combine(outputFolder, "171025_06subset_1.mzML");
@@ -1703,7 +1703,7 @@ namespace Test
                         string fullPath = Path.Combine(outputFolder, fileToWrite);
                         SpectraFileInfo spectraFileInfo = new(fullPath, condition, b, r, f);
 
-                        File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML"), fullPath, true);
+                        File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML"), fullPath, true);
 
 
                         fileInfos.Add(spectraFileInfo);
@@ -1717,10 +1717,10 @@ namespace Test
                 _ = ExperimentalDesign.WriteExperimentalDesignToFile(fileInfos);
             }
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.DoParsimony = true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
 
             glycoSearchTask.RunTask(outputFolder, new List<DbForTask> { db }, fileInfos.Select(p => p.FullFilePathWithExtension).ToList(), "");
 
@@ -1750,11 +1750,11 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
 
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.WriteSpectrumLibrary =  true;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder).Run();
 
             List<string> folderContents = Directory.GetFiles(Path.Combine(outputFolder,"Task")).Select(p => Path.GetFileName(p)).ToList();
@@ -1852,13 +1852,13 @@ namespace Test
 
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TESTGlycoData");
             Directory.CreateDirectory(outputFolder);
-            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
+            var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_Run.toml"), MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.WritePrunedDataBase = true;
             //only write o-glycan in pruned database
             glycoSearchTask._glycoSearchParameters.ModsToWriteSelection = new Dictionary<string, int> { {"O-linked glycosylation", 3}, }; 
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", glycoSearchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db }, outputFolder).Run();
 
 
@@ -1881,7 +1881,7 @@ namespace Test
             DbForTask db_new = new(xml, false);
             var searchTask = Toml.ReadFile<SearchTask>(
                 Path.Combine(TestContext.CurrentContext.TestDirectory,
-                    @"GlycoTestData\TaskForOglycoPruneDb.toml"), MetaMorpheusTask.tomlConfig);
+                    "GlycoTestData", "TaskForOglycoPruneDb.toml"), MetaMorpheusTask.tomlConfig);
             new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("Task", searchTask) }, new List<string> { spectraFile }, new List<DbForTask> { db_new }, outputFolder_new).Run();
 
             // Compare the psm from glyco search and new search with pruned database, they should be identical
@@ -1906,13 +1906,13 @@ namespace Test
             Directory.CreateDirectory(outputFolder);
 
             var glycoSearchTask = Toml.ReadFile<GlycoSearchTask>(
-                Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\Task1-GlycoSearchTaskconfig.toml"),
+                Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "Task1-GlycoSearchTaskconfig.toml"),
                 MetaMorpheusTask.tomlConfig);
             glycoSearchTask._glycoSearchParameters.DoQuantification = false;
 
-            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06_protein.fasta"), false);
-            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_1.mzML");
-            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\QuantData\171025_06subset_2.mzML");
+            DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06_protein.fasta"), false);
+            string spectraFile1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_1.mzML");
+            string spectraFile2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "QuantData", "171025_06subset_2.mzML");
 
             try
             {

@@ -140,7 +140,7 @@ namespace Test
             RegisterGlycoTestDataGlycanDatabase(GlobalVariables.NGlycanDatabasePaths, nglycanPath);
 
             // Load the test MGF file and get MS2 scans
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
             var myFileManager = new MyFileManager(true);
             var msDataFile = myFileManager.LoadFile(spectraFile,commonParameters);
             var ms2ScanWithSpecificMass = MetaMorpheusTask.GetMs2Scans(msDataFile, spectraFile, commonParameters).ToArray();
@@ -328,7 +328,7 @@ namespace Test
             {
                 // Read TOML with low-res tolerance omitted, relying on fallback to productMassTolerance for low-res.
                 var inputTask = MetaMorpheusTask.ReadTaskTomlWithLowResFallback<GlycoSearchTask>(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_OmitNewLowResTolerance.toml"));
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_OmitNewLowResTolerance.toml"));
 
                 // Confirm read-in behavior (tracking expected when low-res omitted)
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance, Is.TypeOf<PpmTolerance>());
@@ -336,8 +336,8 @@ namespace Test
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance_LowRes, Is.TypeOf<PpmTolerance>());
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance_LowRes.Value, Is.EqualTo(40).Within(1e-9));
 
-                DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-                string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+                DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+                string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
 
                 new EverythingRunnerEngine(
                     new List<(string, MetaMorpheusTask)> { ("Task", inputTask) },
@@ -375,7 +375,7 @@ namespace Test
             try
             {
                 var inputTask = MetaMorpheusTask.ReadTaskTomlWithLowResFallback<GlycoSearchTask>(
-                    Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\GlycoSearchTaskconfigOGlycoTest_LowResToleranceAdded.toml"));
+                    Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "GlycoSearchTaskconfigOGlycoTest_LowResToleranceAdded.toml"));
 
                 // Confirm read-in behavior: explicit low-res tolerance is preserved (not overridden by product tolerance)
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance, Is.TypeOf<PpmTolerance>());
@@ -383,8 +383,8 @@ namespace Test
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance_LowRes, Is.TypeOf<AbsoluteTolerance>());
                 Assert.That(inputTask.CommonParameters.ProductMassTolerance_LowRes.Value, Is.EqualTo(0.35));
 
-                DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\P16150.fasta"), false);
-                string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
+                DbForTask db = new(Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "P16150.fasta"), false);
+                string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_9906.mgf");
 
                 new EverythingRunnerEngine(
                     new List<(string, MetaMorpheusTask)> { ("Task", inputTask) },
@@ -433,7 +433,7 @@ namespace Test
             Assert.That(commonParameters.ProductMassTolerance.GetRange(1000).Width, Is.EqualTo(highResTolerance.GetRange(1000).Width));
 
             // Sanity-check the parameter values were set
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scan = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).First();
 
@@ -490,7 +490,7 @@ namespace Test
             Assert.That(commonParameters.ProductMassTolerance_LowRes.GetRange(1000).Width, Is.EqualTo(lowResTolerance.GetRange(1000).Width));
 
             // Sanity-check the parameter values were set
-            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"GlycoTestData\2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
+            string spectraFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "GlycoTestData", "2019_09_16_StcEmix_35trig_EThcD25_rep1_4565.mgf");
             var file = new MyFileManager(true).LoadFile(spectraFile, commonParameters);
             var scan = MetaMorpheusTask.GetMs2Scans(file, spectraFile, commonParameters).First();
 
@@ -545,8 +545,8 @@ namespace Test
                 RegisterGlycoTestDataGlycanDatabase(GlobalVariables.NGlycanDatabasePaths, nglycanPath);
 
                 // Use a calibratable mzML for calibration.
-                string rawFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\SmallCalibratible_Yeast.mzML");
-                string database = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\smalldb.fasta");
+                string rawFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SmallCalibratible_Yeast.mzML");
+                string database = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "smalldb.fasta");
 
                 Tolerance originalPrecursorTolerance = new PpmTolerance(5);
                 Tolerance originalProductTolerance = new PpmTolerance(20);

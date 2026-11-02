@@ -40,7 +40,7 @@ namespace Test
             var fsp = FileSpecificParameters(commonParameters);
             var dataFile = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData", DataFileName);
             var msDataFile = new MyFileManager(true).LoadFile(dataFile, commonParameters);
-            List<Protein> proteins = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\hela_snip_for_unitTest.fasta"),
+            List<Protein> proteins = ProteinDbLoader.LoadProteinFasta(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta"),
                 true, DecoyType.Reverse, false, out _, ProteinDbLoader.UniprotAccessionRegex, ProteinDbLoader.UniprotFullNameRegex, ProteinDbLoader.UniprotFullNameRegex,
                 ProteinDbLoader.UniprotGeneNameRegex, ProteinDbLoader.UniprotOrganismRegex, -1);
             var scans = MetaMorpheusTask.GetMs2Scans(msDataFile, dataFile, commonParameters).OrderBy(b => b.PrecursorMass).ToArray();
@@ -466,7 +466,7 @@ namespace Test
         {
             Assert.That(new SearchParameters().IterativePepTraining, Is.True);
             // A task file written before the setting existed has no such key, and must load with iteration on.
-            string oldToml = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\customBY.toml");
+            string oldToml = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "customBY.toml");
             Assert.That(File.ReadAllText(oldToml), Does.Not.Contain(nameof(SearchParameters.IterativePepTraining)));
             Assert.That(Toml.ReadFile<SearchTask>(oldToml, MetaMorpheusTask.tomlConfig).SearchParameters.IterativePepTraining, Is.True);
             // The engine on its own trains once; only a search task's setting turns iteration on.

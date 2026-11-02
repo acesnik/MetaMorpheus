@@ -642,8 +642,8 @@ namespace Test
             Directory.CreateDirectory(inputFolder);
             string mzmlName = Path.Combine(inputFolder, "PrunedDbSpectra.mzml");
             string fastaName = Path.Combine(inputFolder, "DbForPrunedDb.fasta");
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\PrunedDbSpectra.mzml"), mzmlName, true);
-            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestData\DbForPrunedDb.fasta"), fastaName, true);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "PrunedDbSpectra.mzml"), mzmlName, true);
+            File.Copy(Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "DbForPrunedDb.fasta"), fastaName, true);
 
             var engine = new EverythingRunnerEngine(taskList, new List<string> { mzmlName }, new List<DbForTask> { new DbForTask(fastaName, false) }, outputFolder);
             engine.Run();
