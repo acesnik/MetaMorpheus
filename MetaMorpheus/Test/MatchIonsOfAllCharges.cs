@@ -422,7 +422,7 @@ namespace Test
             string db2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.fasta");
             string raw1 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
             string raw2 = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_A549_3_snip.mzML");
-            string lib = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "SpectralLibrary.msp");
+            string lib = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "spectralLibrary.msp");
             string rawCopy = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "UpdateLibrary", "rawCopy.mzML");
             if (File.Exists(rawCopy))
                 File.Delete(rawCopy);
@@ -465,7 +465,7 @@ namespace Test
 
             string db = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "hela_snip_for_unitTest.fasta");
             string raw = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TaGe_SA_HeLa_04_subset_longestSeq.mzML");
-            string lib = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "SpectralLibrary.msp");
+            string lib = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "SpectralLibrarySearch", "spectralLibrary.msp");
             
             GptmdTask GptmdTask = new();
             MyTaskResults afterGPTMD = GptmdTask.RunTask(thisTaskOutputFolder, new List<DbForTask> { new DbForTask(db, false), new DbForTask(lib, false) }, new List<string> { raw }, "test");

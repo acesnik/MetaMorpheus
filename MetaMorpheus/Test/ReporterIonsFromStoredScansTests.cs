@@ -54,7 +54,7 @@ namespace Test
             {
                 if (Directory.Exists(outputFolder)) Directory.Delete(outputFolder, true);
                 new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("search", searchTask) },
-                    new List<string> { mzml }, new List<DbForTask> { new DbForTask(TestFile("mouseTMT.fasta"), false) },
+                    new List<string> { mzml }, new List<DbForTask> { new DbForTask(TestFile("mouseTmt.fasta"), false) },
                     outputFolder).Run();
 
                 string[] lines = File.ReadAllLines(Path.Combine(outputFolder, "search", "AllPSMs.psmtsv"));
@@ -169,7 +169,7 @@ namespace Test
                 string mgf = WriteMgfWithRepeatedScan(TestFile("VA084TQ_6.mzML"), Path.Combine(folder, "VA084TQ_6.mgf"));
                 string outputFolder = Path.Combine(folder, "output");
                 new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("search", searchTask) },
-                    new List<string> { mgf }, new List<DbForTask> { new DbForTask(TestFile("mouseTMT.fasta"), false) },
+                    new List<string> { mgf }, new List<DbForTask> { new DbForTask(TestFile("mouseTmt.fasta"), false) },
                     outputFolder).Run();
 
                 string[] lines = File.ReadAllLines(Path.Combine(outputFolder, "search", "AllPSMs.psmtsv"));
@@ -276,7 +276,7 @@ namespace Test
                 }
                 string outputFolder = Path.Combine(folder, "output");
                 new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("search", searchTask) },
-                    new List<string> { spectra }, new List<DbForTask> { new DbForTask(TestFile("mouseTMT.fasta"), false) },
+                    new List<string> { spectra }, new List<DbForTask> { new DbForTask(TestFile("mouseTmt.fasta"), false) },
                     outputFolder).Run();
 
                 string[] lines = File.ReadAllLines(Path.Combine(outputFolder, "search", "AllPSMs.psmtsv"));
@@ -439,7 +439,7 @@ namespace Test
                 string spectra = Fixture(fixture, folder);
                 string outputFolder = Path.Combine(folder, "output");
                 new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("search", searchTask) },
-                    new List<string> { spectra }, new List<DbForTask> { new DbForTask(TestFile("mouseTMT.fasta"), false) },
+                    new List<string> { spectra }, new List<DbForTask> { new DbForTask(TestFile("mouseTmt.fasta"), false) },
                     outputFolder).Run();
 
                 string[] lines = File.ReadAllLines(Path.Combine(outputFolder, "search", "AllPSMs.psmtsv"));

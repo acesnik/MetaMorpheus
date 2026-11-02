@@ -266,11 +266,11 @@ namespace Test.MetaDraw
         [Test]
         public static void TestFragmentationReanalysisViewModel_DiagnosticIons()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "TMT-Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TestData", "TestRefragmentDiagnosticIons");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "VA084TQ_6.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "mouseTmt.fasta");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta");
 
             var engineToml = new EverythingRunnerEngine(
                 new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) },

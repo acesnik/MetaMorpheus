@@ -673,7 +673,7 @@
     <None Update="TestData\SpectralLibrarySearch\slicedMouseDatabase.fasta.gz">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="TestData\SpectralLibrarySearch\slicedYeast.raw">
+    <None Update="TestData\SpectralLibrarySearch\SlicedYeast.raw">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="TestData\SpectralLibrarySearch\slicedYeastData.raw">

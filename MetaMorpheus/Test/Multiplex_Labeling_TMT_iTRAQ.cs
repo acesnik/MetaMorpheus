@@ -277,7 +277,7 @@ namespace Test
 
             List<(string, MetaMorpheusTask)> taskList = new List<(string, MetaMorpheusTask)> { ("search", searchTask) };
             string mzmlName = Path.Combine("TMT_test", "VA084TQ_6.mzML");
-            string fastaName =  Path.Combine("TMT_test", "mouseTMT.fasta");
+            string fastaName =  Path.Combine("TMT_test", "mouseTmt.fasta");
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestTmtOutput");
             if(Directory.Exists(outputFolder))
                 Directory.Delete(outputFolder, true);
@@ -588,11 +588,11 @@ namespace Test
         [Test]
         public static void TestDoNotCountDiagnosticIonsInScore_HCD()
         {
-            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "TMT-Task1-SearchTaskconfig.toml");
+            var myTomlPath = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TMT-Task1-SearchTaskconfig.toml");
             var searchTaskLoaded = Toml.ReadFile<SearchTask>(myTomlPath, MetaMorpheusTask.tomlConfig);
-            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "TestOutput");
-            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "VA084TQ_6.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_Test", "mouseTmt.fasta");
+            string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "TestOutput");
+            string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "VA084TQ_6.mzML");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "TMT_test", "mouseTmt.fasta");
 
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();

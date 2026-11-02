@@ -26,7 +26,7 @@ namespace Test
             string outputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, "DatabaseTests", "TestProtease");
             Directory.CreateDirectory(outputFolder);
             string myFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "DatabaseTests", "Q9UHB6_Chym_snip.mzML");
-            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "DatabaseTests", "Q9UHB6.fasta");
+            string myDatabase = Path.Combine(TestContext.CurrentContext.TestDirectory, "DatabaseTests", "Q9UHB6.FASTA");
 
             var engineToml = new EverythingRunnerEngine(new List<(string, MetaMorpheusTask)> { ("SearchTOML", searchTaskLoaded) }, new List<string> { myFile }, new List<DbForTask> { new DbForTask(myDatabase, false) }, outputFolder);
             engineToml.Run();

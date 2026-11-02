@@ -151,20 +151,20 @@ namespace Test
         {
             string thisTaskOutputFolder = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantFileOutput");
 
-            SearchTask task = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"VariantSearchTaskConfig.toml"), MetaMorpheusTask.tomlConfig);
+            SearchTask task = Toml.ReadFile<SearchTask>(Path.Combine(TestContext.CurrentContext.TestDirectory, @"VariantSearchTaskconfig.toml"), MetaMorpheusTask.tomlConfig);
             task.SearchParameters.DecoyType = DecoyType.None;
 
             DbForTask noVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestNoVariantDb.xml"), false);
             DbForTask ambigVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_ambiguous.xml"), false);
-            //DbForTask frameshiftVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_frameshift.xml"), false);
-            DbForTask missenseVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_missense.xml"), false);
-            DbForTask SNVmissenseVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_SNVmissense.xml"), false);
-            DbForTask stopGainedVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_stopGained.xml"), false);
-            DbForTask conservativeInsertionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_conservativeInsertion.xml"), false);
-            DbForTask disruptiveInsertionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_disruptiveInsertion.xml"), false);
-            DbForTask conservativeDeletionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_conservativeDeletion.xml"), false);
-            DbForTask disruptiveDeletionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_disruptiveDeletion.xml"), false);
-            DbForTask stopLossVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDB_stopLoss.xml"), false);
+            //DbForTask frameshiftVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_frameshift.xml"), false);
+            DbForTask missenseVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_missense.xml"), false);
+            DbForTask SNVmissenseVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_SNVmissense.xml"), false);
+            DbForTask stopGainedVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_stopGained.xml"), false);
+            DbForTask conservativeInsertionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_conservativeInsertion.xml"), false);
+            DbForTask disruptiveInsertionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_disruptiveInsertion.xml"), false);
+            DbForTask conservativeDeletionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_conservativeDeletion.xml"), false);
+            DbForTask disruptiveDeletionVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_disruptiveDeletion.xml"), false);
+            DbForTask stopLossVariantDb = new DbForTask(Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantDb_stopLoss.xml"), false);
 
             string raw = Path.Combine(TestContext.CurrentContext.TestDirectory, @"TestVariantPep.mzML");
 
